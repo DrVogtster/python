@@ -162,3 +162,6 @@ def sharp_optimization_and_get_buy_sell_prices(n,m,k):
         the_file.write('Actual return in portfolio (if selling early with ML): '  + str(ml_buy) + '\n')
         the_file.write('--------------------------------------------------------\n')
     the_file.close()
+
+
+#matrix (i-1)*j+j
