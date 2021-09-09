@@ -116,3 +116,6 @@ def stromer_verlet(S,K,T_max,nt,g_u,g_v,dim):
         solution_list[:,:,i] = u_np1-1j*v_np1 
     return (solution_list,solution_list[:,:,-1])
 
+
+
+#main
