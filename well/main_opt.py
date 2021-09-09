@@ -27,6 +27,10 @@ def plot_trunc(a,b,mean,std,scale):
 
 #plot_trunc(0,3,1.5,1,math.pi)
 
+def state_solver(v1,v2,a,b,mean,std,dim,,a,b,mean,std,dim,T_max,nt,g_u,g_v)
+    (S,K) = produce_real_and_imag_ham_funcs(v1,v2,amp_list,dim,a,b,mean,std,dim):
+    (sol_history,final_sol) = stromer_verlet(S,K,T_max,nt,g_u,g_v,dim)
+    return (sol,final_sol)
 def ham_helper():
     sigma_x,sigma_y,sigma_z = generate_sigmas_xyz()
     S12=s_one(1,2,sigma_x,sigma_y,sigma_z)
@@ -37,20 +41,42 @@ def ham_helper():
 
 
 
-def produce_real_part_func(t,v1,v2,amp_list, s12r, s23r,a,b,mean,std,scale,dim)
+def produce_real_part_func(t,v1,v2,amp_list, s12r, s23r,a,b,mean,std,dim)
     
-    for k in range(0,len(v1)):
+    m,n = s12r.shape
+
+    s12_part = zeros((m,m))
+    s23_part = zeros((m,m))
+    for i in range(0,len(v1)):
+        s12_part = s12_part -v1[i]*scaled_trun_func(t,a,b,mean,std,amp_list[i])*s12r
+        s23_part = s23_part -v2[i]*scaled_trun_func(t,a,b,mean,std,amp_list[i])*s23r
+    return s12_part+s23_part
+
+def produce_imag_part_func(t,v1,v2,amp_list, s12i, s23i,a,b,mean,std,dim)
+    
+    m,n = s12i.shape
+
+    s12_part = zeros((m,m))
+    s23_part = zeros((m,m))
+    for i in range(0,len(v1)):
+        s12_part = s12_part -v1[i]*scaled_trun_func(t,a,b,mean,std,amp_list[i])*s12i
+        s23_part = s23_part -v2[i]*scaled_trun_func(t,a,b,mean,std,amp_list[i])*s23i
+    return s12_part+s23_part
+    
+
+    
         
 
 
 
    
 
-def produce_real_and_imag_ham_funcs(v1,v2,amp_list,dim):
+def produce_real_and_imag_ham_funcs(v1,v2,amp_list,dim,a,b,mean,std,dim):
     s12r,s12i,s23r,s23i = ham_helper()
-    S = lambda t: produce_real_part_func(t,v1,v2,amp_list,s12r,s23r)
+    S = lambda t: produce_real_part_func(t,v1,v2,amp_list,s12r,s23r,a,b,mean,std,dim)
+    K = lambda t: produce_imag_part_func(t,v1,v2,amp_list,s12i,s23i,a,b,mean,std,dim)
 
-
+    return (S,K)
 
 
 

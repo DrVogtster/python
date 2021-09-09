@@ -131,15 +131,15 @@ matprint(x)
 for i in range(0,8):
     print(np.linalg.norm(x[:,i]))
 
-gamma=.5
-sigma=.5
-y=dfs_0_1(gamma,sigma,x)
-print(y)
-print(10)
+# gamma=.5
+# sigma=.5
+# y=dfs_0_1(gamma,sigma,x)
+# print(y)
+# print(10)
 
-sigma_x,sigma_y,sigma_z = generate_sigmas_xyz()
+# sigma_x,sigma_y,sigma_z = generate_sigmas_xyz()
 
 
-H=s_one(1,1,sigma_x,sigma_y,sigma_z)
-print(H)
+# H=s_one(1,1,sigma_x,sigma_y,sigma_z)
+# print(H)
 #comment
