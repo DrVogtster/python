@@ -1,6 +1,66 @@
+def mat_func(self,input_mat):
+    # H = np.zeros((len(xk),len(xk)))
+
+    # for i in range(0,len(xk)):
+    # 	H[i,i] = ((-1)**i)*2.0
+    # return H
+
+    (y_size,x_size) = input_mat.shape
+    H = {}
+    for i in range(1,y_size+1):
+        for j in range(1,x_size+1):
+            #print((i,j))
+
+                H[(i,j)] = input_mat[i-1,j-1]
+
+    return H
+def vec_func(self,input_vec):
+    # H = np.zeros((len(xk),len(xk)))
+
+    # for i in range(0,len(xk)):
+    # 	H[i,i] = ((-1)**i)*2.0
+    # return H
+
+    xsize = len(input_vec)
+    v = {}
+
+    for i in range(1,xsize+1):
+
+        v[i] =input_vec[i-1]
+
+    return v
+
+def build_sos1_constraint_one(self, M, i):
+    return (M.ni[i] - M.n_max[1]*M.bi[i] <= 0.0)
+def build_sos1_constraint_two(self, M, i):
+    return (M.ni[i] - M.bi[i] >= 0.0)
+
+def greater_percent(self, M, i):
+    return M.wi[i]>=M.mp[1]
+def number_stock_constraint(self, model):
+    return sum(model.bi[i] for i in model.number_stocks) <= model.ns[1]
+
+def satisfy_allocation(self,model):
+    return((1-model.buffer[1])*model.p[1],sum(model.buy_price[i]*model.wi[i] for i in model.number_stocks),(1+model.buffer[1])*model.p[1])
+
+def num_con(self,model):
 
 
-def sharp_optimization_and_get_buy_sell_prices(n,m,k):
+    # return (model.min_stock[1],counter,model.max_stock[1])
+    return sum(model.bi[i] for i in model.number_stocks) ==model.max_stock[1]
+
+def bound_consd(self, M, i):
+    return M.bi[i]<=M.wi[i]
+
+def percentage_constraint(self, model):
+    return sum(model.wi[i] for i in model.number_stocks) == 1.0
+
+def allocation_constraint(self, model):
+    return (0.0,sum(model.ni[i] * model.buy_price[i] for i in model.number_stocks),model.p[1])
+
+
+
+def sharp_optimization_and_get_buy_sell_prices(m,n,k):
     
     M = AbstractModel()
     M.n = RangeSet(1,n)
@@ -107,7 +167,7 @@ def sharp_optimization_and_get_buy_sell_prices(n,m,k):
 
     instance = V.create_instance()
     results=SolverFactory('mindtpy').solve(instance,strategy='OA',
-                                time_limit=3600, mip_solver='cplex', nlp_solver='ipopt',tee=True)
+                                time_limit=3600, mip_solver='glpk', nlp_solver='ipopt',tee=True)
 
 
 
@@ -121,47 +181,6 @@ def sharp_optimization_and_get_buy_sell_prices(n,m,k):
         new_n.append(instance.ni[p].value)
 
 
-    counter=0
-    for k in self.portfolio.keys():
-        print("-----")
-        print(new_wi[counter])
-        print(counter)
-        print(len(new_wi))
-        print(len(buy_list))
-        print("-----")
-        if(new_wi[counter]!=1):
-            #num = math.floor(((new_wi[counter]*portfolio_allocation_amount)/buy_list[counter]))
-            num = new_n[counter]
-
-
-            if(num!=0):
-                res_dic[k] = {"name": str(k), "buy_price": str(buy_list[counter]), "sell_price": str(sell_list[counter]), "number_to_buy":str(num), "historical_expected_return": str(num*self.avg_mat[counter])}
-        counter+=1
-    return_data=0.0
-    basic_return=0
-    ml_buy=0.0
-    percent_buy=0.0
-    with open('portfolio_results.json', 'w') as fp:
-        json.dump(res_dic, fp)
-    str_file = "human_readable_results.txt"
-    with open(str_file, 'w') as the_file:
-        the_file.write('--------------------------------------------------------\n')
-        the_file.write('Summary for Portfolio Allocation ' + '\n')
-        sum =0.0
-        total_return=0.0
-        for k in res_dic.keys():
-            the_file.write('Buy '+ str(res_dic[k]['number_to_buy']) + ' ' + str(res_dic[k]['name']) + ' for ' +str(res_dic[k]['buy_price']) + ' and sell at ' + str(res_dic[k]['sell_price']) + 'for an expected histroical return of ' + str(res_dic[k]['historical_expected_return']) +  '\n')
-            sum += float(res_dic[k]['number_to_buy'])*float(res_dic[k]['buy_price'])
-            total_return+= float(res_dic[k]['historical_expected_return'])
-            return_data+= float(res_dic[k]['number_to_buy'])*(float(self.portfolio[str(res_dic[k]['name'])]["Close"][-1])-float(res_dic[k]['buy_price']))
-            basic_return+= float(res_dic[k]['number_to_buy'])*(float(self.portfolio[str(res_dic[k]['name'])]["Close"][-1])-float(self.portfolio[str(res_dic[k]['name'])]["Open"][-21]))
-            ml_buy+=float(res_dic[k]['number_to_buy'])*(float(res_dic[k]['sell_price'])-float(res_dic[k]['buy_price']))
-        the_file.write('total investment in portfolio: '  + str(sum) + 'expected return on historical expectations: ' + str(total_return) +'\n')
-        the_file.write('Actual return in portfolio (if buying prices are met with ML 3 weeks ago): '  + str(return_data) + '\n')
-        the_file.write('Actual return in portfolio (if buying with market current price 3 weeks ago): '  + str(basic_return) + '\n')
-        the_file.write('Actual return in portfolio (if selling early with ML): '  + str(ml_buy) + '\n')
-        the_file.write('--------------------------------------------------------\n')
-    the_file.close()
 
 
 #matrix (i-1)*j+j
