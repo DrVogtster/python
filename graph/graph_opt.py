@@ -1,4 +1,56 @@
-def mat_func(self,input_mat):
+import random
+import numpy as np
+import glob, os
+import pandas as pd
+import numpy as np
+import pickle
+import pylab as plt
+from sklearn.neighbors import KernelDensity
+import numpy as np
+from scipy.stats.distributions import norm
+import math
+import asyncio
+import os
+from sklearn.model_selection import GridSearchCV
+
+from pyomo.core import *
+from pyomo.environ import *
+
+
+def parser(file):
+    sequence_list=[]
+    file1 = open(file, 'r')
+    Lines = file1.readlines()
+    
+    for line in Lines:
+        line=line.replace("\n", "")
+        first = line.split("|")
+        #print(first)
+        seq_piece=[]
+        for ent in first:
+            end = ent.split(" ")
+            print(end)
+            seq_piece.append([int(end[0]),int(end[1])])
+        sequence_list.append(seq_piece)
+    return sequence_list
+
+def random_coeff_matrix(m,n):
+    C = np.zeros((m,n))
+    for i in range(0,m):
+        for j in range(0,n):
+            C[i,j] = random.uniform(.1, 10.0)
+    return C
+
+
+
+
+
+
+
+
+
+
+def mat_func(input_mat):
     # H = np.zeros((len(xk),len(xk)))
 
     # for i in range(0,len(xk)):
@@ -179,8 +231,55 @@ def sharp_optimization_and_get_buy_sell_prices(m,n,k):
         # new_ni.append(instance.ni[p].value)
         # new_bi.append(instance.bi[p].value)
         new_n.append(instance.ni[p].value)
+def X_i(self, M,n, i,k):
+    return sum(M.X[n,k,i,j] for j in M.nm)==1.0
+def X_j(self, M,n,j,k):
+    return sum(M.X[n,k,i,j] for i in M.nn)==1.0
+def V_no_overlap(self,n, i,j):
+    return sum(M.V[n,k,i,j]M.V[n,k,j,i] +  for k in M.k)<=2
+def V_paths(self,n,i,k):
+    return sum(M.V[n,k,i,j]M.V[n,k,j,i] +  for k in M.k) == M.L[i,k]
+def J(model):
+    return sum(
+            model.V[k,i,j]*model.C[i,j] for
+            i in model.nm for j in model.nm for k in model.k)
+
+def loc_matrix(step,Nq,seq_list):
+    loc_mat = np.zeros((Nq,step))
+    counter=0
+    for seq in seq_list:
+        for piece in seq:
+            print(piece)
+            loc_mat[piece[0]-1,counter]=1
+            loc_mat[piece[1]-1,counter]=-1
+
+        counter+=1
+    return loc_mat
+def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
+    seq_list = parser(file)
+    C = random_coeff_matrix(m*n,m*n)
+    L =loc_matrix(n_steps,number_nodes,seq_list)
+    py_c = mat_func(C)
+    M = AbstractModel()
+    M.n = RangeSet(1,n)
+    M.m = RangeSet(1,m)
+    M.nm = RangeSet(1,n*m)
+    M.k = RangeSet(1,k)
+    M.nn = RangeSet(1,number_nodes)
+    M.C = Param(M.nm,M.nm, initialize=py_c)
+    
+    M.n_steps = RangeSet(1,n_steps)
+    M.L = Param(M.nn,M.n_steps, initialize=L)
+
+    M.V = Var(M.n_steps,M.k,M.nm,M.nm, domain=Binary)
+    M.X = Var(M.n_steps,M.k,M.nn,M.nm, domain=Binary)
 
 
 
+out=parser("seq.txt")
+# print(random_coeff_matrix(5,5))
 
+file_name="seq.txt"
+graph_opt_fun(5,5,5,5,5,file_name)
+print(loc_matrix(3,4,out))
 #matrix (i-1)*j+j
