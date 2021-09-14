@@ -231,18 +231,22 @@ def sharp_optimization_and_get_buy_sell_prices(m,n,k):
         # new_ni.append(instance.ni[p].value)
         # new_bi.append(instance.bi[p].value)
         new_n.append(instance.ni[p].value)
-def X_i(self, M,n, i,k):
+def X_i(M,n, i,k):
     return sum(M.X[n,k,i,j] for j in M.nm)==1.0
-def X_j(self, M,n,j,k):
+def X_j(M,n,j,k):
     return sum(M.X[n,k,i,j] for i in M.nn)==1.0
-def V_no_overlap(self,n, i,j):
-    return sum(M.V[n,k,i,j]M.V[n,k,j,i] +  for k in M.k)<=2
-def V_paths(self,n,i,k):
-    return sum(M.V[n,k,i,j]M.V[n,k,j,i] +  for k in M.k) == M.L[i,k]
+def V_no_overlap(M,n, i,j):
+    return sum(M.V[n,k,i,j]+M.V[n,k,j,i]  for k in M.k)<=2
+def V_paths(M,n,k,i):
+    # M.X = Var(M.n_steps,M.k,M.nn,M.nm, domain=Binary)
+    for p in M.nn:
+        if M.X[n,k,p,]
+
+    return sum(M.V[n,k,i,j] +M.V[n,k,j,i]for j in M.mn) == M.L[i,k]
 def J(model):
     return sum(
-            model.V[k,i,j]*model.C[i,j] for
-            i in model.nm for j in model.nm for k in model.k)
+            model.V[n,k,i,j]*model.C[i,j] for
+            i in model.nm for j in model.nm for k in model.k for n in model.nn)
 
 def loc_matrix(step,Nq,seq_list):
     loc_mat = np.zeros((Nq,step))
@@ -272,7 +276,7 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
     M.L = Param(M.nn,M.n_steps, initialize=L)
 
     M.V = Var(M.n_steps,M.k,M.nm,M.nm, domain=Binary)
-    M.X = Var(M.n_steps,M.k,M.nn,M.nm, domain=Binary)
+    M.X = Var(M.n_steps,M.k,M.nn,M.m,M.n, domain=Binary)
 
 
 
