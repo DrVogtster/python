@@ -9,10 +9,10 @@ FROM ubuntu:latest
 RUN apt-get -y update
 RUN apt-get -y install git
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get -y update && apt-get install -y \
 curl
 CMD /bin/bash
-RUN apt install build-essential
+RUN apt install -y build-essential
 
 
 RUN apt-get update && \
@@ -39,7 +39,7 @@ RUN /home/linuxbrew/.linuxbrew/bin/brew install pkg-config
 
 
 
-RUN /home/linuxbrew/.linuxbrew/bin/brew install homebrew/science/ipopt
+RUN /home/linuxbrew/.linuxbrew/bin/brew install ipopt
 RUN /home/linuxbrew/.linuxbrew/bin/brew install glpk
 
 
