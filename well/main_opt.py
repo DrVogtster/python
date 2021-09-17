@@ -69,7 +69,7 @@ def convergence_test():
     T_max = 10.0
     for i in range(5,17):
         n_list.append(2**i)
-    h=1.0
+    h=1
     S=S_test
     K=K_test
     for i in range(0,len(n_list)):
@@ -149,13 +149,14 @@ def produce_real_and_imag_ham_funcs(v1,v2,amp_list,a,b,mean,std,dim):
 
 
 
-
+#only works for h=1 right now
 def stromer_verlet(S,K,T_max,nt,gu,gv,dim,h,fu_s_func,fv_s_func):
     t_list,dt= np.linspace(0,T_max,nt,retstep=True)
     fu_s  = lambda t :fu_s_func(t,h)
     fv_s  = lambda t :fv_s_func(t,h)
     solution_list =np.zeros((dim,dim,len(t_list)), dtype=complex)
     solution_list[:,:,0] = gu-1j*gv 
+    print("plank constant:" +str(h))
     for i in range(1,len(t_list)):
         u_n = solution_list[:,:,i-1].real
         v_n = -solution_list[:,:,i-1].imag
@@ -173,7 +174,7 @@ def stromer_verlet(S,K,T_max,nt,gu,gv,dim,h,fu_s_func,fv_s_func):
         Kn1 = K(tn_1)
 
         U_n1 = u_n
-        V_n1 = linalg.solve(np.eye(dim) - (dt/2.0*h)*Sn5, v_n +(dt/h*2.0)*(Kn5*U_n1)+ (dt/2.0)*(fv_s(tn_p5)))
+        V_n1 = linalg.solve(np.eye(dim) - (dt/2.0*h)*Sn5, v_n +(dt/2.0)*((1.0/h)*Kn5*U_n1+ fv_s(tn_p5)))
         kap_n1 = (1.0/h)*(Sn*U_n1 - Kn*V_n1) + fu_s(tn)
         l_n1 = (1.0/h)*(Kn5*U_n1 + Sn5*V_n1) + fv_s(tn_p5)
         V_n2 = v_n +(dt/2.0)*l_n1
