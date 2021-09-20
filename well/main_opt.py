@@ -69,11 +69,11 @@ def convergence_test():
     T_max = 10.0
     for i in range(5,17):
         n_list.append(2**i)
-    h=1
+    h_plank=10.0
     S=S_test
     K=K_test
     for i in range(0,len(n_list)):
-        (sol_list,final_sol) =stromer_verlet(S,K,T_max,n_list[i],np.eye(n_dim),np.zeros((n_dim,n_dim)),n_dim,h,f_u_s_test,f_v_s_test)
+        (sol_list,final_sol) =stromer_verlet(S,K,T_max,n_list[i],np.eye(n_dim),np.zeros((n_dim,n_dim)),n_dim,h_plank,f_u_s_test,f_v_s_test)
         final_sol_re = final_sol.real
         final_sol_im = final_sol.imag
         max_re = np.linalg.norm(true_u(T_max) - final_sol_re,np.inf)
@@ -150,13 +150,17 @@ def produce_real_and_imag_ham_funcs(v1,v2,amp_list,a,b,mean,std,dim):
 
 
 #only works for h=1 right now
-def stromer_verlet(S,K,T_max,nt,gu,gv,dim,h,fu_s_func,fv_s_func):
+def stromer_verlet(S_func,K_func,T_max,nt,gu,gv,dim,h_plank,fu_s_func,fv_s_func):
+    S = lambda t : S_func(t)/h_plank
+    K = lambda t : K_func(t)/h_plank
+
     t_list,dt= np.linspace(0,T_max,nt,retstep=True)
-    fu_s  = lambda t :fu_s_func(t,h)
-    fv_s  = lambda t :fv_s_func(t,h)
+    fu_s  = lambda t :fu_s_func(t,h_plank)
+    fv_s  = lambda t :fv_s_func(t,h_plank)
     solution_list =np.zeros((dim,dim,len(t_list)), dtype=complex)
     solution_list[:,:,0] = gu-1j*gv 
-    print("plank constant:" +str(h))
+    print("plank constant:" +str(h_plank))
+    h=1.0
     for i in range(1,len(t_list)):
         u_n = solution_list[:,:,i-1].real
         v_n = -solution_list[:,:,i-1].imag
