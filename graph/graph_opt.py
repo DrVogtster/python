@@ -172,7 +172,7 @@ def V_paths(M,n,k,i):
     node_list = dic_node_neighbors[(i,)]
     # for v in range(0,len(res2)):
     #     res2[v] = int(int(res2[v])) 
-    return sum(M.V[n,k,i,j] +M.V[n,k,j,i]for j in M.mn) == sum(M.X[n,k,p,res2[0],res2[1]]*M.L[n,k,p] for p in M.nn)
+    return sum(M.V[n,k,i,j] +M.V[n,k,j,i]for j in node_list) == sum(M.X[n,k,p,res2[0],res2[1]]*M.L[n,k,p] for p in M.nn)
 
 def X_place_nodes(M,n, k,nn):
     return sum(M.X[n,k,nn,i,j]  for i in M.m for j in M.n)== M.L[n,k,nn]*M.L[n,k,nn]
