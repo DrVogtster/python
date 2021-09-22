@@ -172,12 +172,12 @@ def V_paths(M,n,k,i):
     node_list = dic_node_neighbors[(i,)]
     # for v in range(0,len(res2)):
     #     res2[v] = int(int(res2[v])) 
-    return sum(M.V[n,k,i,j] -M.V[n,k,j,i]for j in node_list) == sum(M.X[n,k,p,i]*M.L[n,k,p] for p in M.nn)
+    return sum(M.V[n,k,i,j] -M.V[n,k,j,i]for j in node_list) == sum(M.X[n,k,p,res2[0],res2[1]]*M.L[n,k,p] for p in M.nn)
 
 def X_place_nodes(M,n, k,nn):
-    return sum(M.X[n,k,nn,i]  for i in M.mn)== M.L[n,k,nn]*M.L[n,k,nn]
-def X_place_nodes_no_double_placement(M,n,k,i):
-    return (0.0,sum(M.X[n,k,nn,i]  for nn in M.nn),1.0)
+    return sum(M.X[n,k,nn,i,j]  for i in M.m for j in M.n)== M.L[n,k,nn]*M.L[n,k,nn]
+def X_place_nodes_no_double_placement(M,n,k,i,j):
+    return sum(M.X[n,k,nn,i,j]  for nn in M.nn)<=1
 def generate_mn_m_n_dics(m,n):
     global dic_mn
     global dic_m_n
@@ -235,11 +235,11 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
     M.L = Param(M.n,M.k,M.nn, initialize=L)
 
     M.V = Var(M.n_steps,M.k,M.mn,M.mn, domain=Binary)
-    M.X = Var(M.n_steps,M.k,M.nn,M.mn, domain=Binary)
+    M.X = Var(M.n_steps,M.k,M.nn,M.m,M.n, domain=Binary)
 
     M.C1 = Constraint(M.n_steps,M.k,M.nn, rule=X_place_nodes)
     M.C2 = Constraint(M.n_steps,M.k,M.mn, rule=V_paths)
-    M.C3 =Constraint(M.n_steps,M.k,M.mn,rule=X_place_nodes_no_double_placement)
+    M.C3 =Constraint(M.n_steps,M.k,M.m,M.n,rule=X_place_nodes_no_double_placement)
 
     M.obj = Objective(rule=J, sense=minimize)
     #M.C2.pprint()
@@ -268,18 +268,16 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
     # print(instance.X[1,1,2,1,2].value)
     #print(sum(instance.X[1,1,k,i,j].value for k in M.nn for i in M.m for j in M.n ))
     #print(sum(instance.V[1,2,i,j].value for i in M.m for j in M.n ))
-    print(results)
- 
 
-out=parser("seq.txt")
+out=parser("seq2.txt")
 # print(random_coeff_matrix(5,5))
 
-file_name="seq.txt"
-m=5
-n=3
-k=2
-n_steps=3
-number_nodes=4
+file_name="seq2.txt"
+m=2
+n=2
+k=1
+n_steps=1
+number_nodes=2
 
 
 
