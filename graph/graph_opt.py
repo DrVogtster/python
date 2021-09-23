@@ -176,8 +176,8 @@ def V_paths(M,n,k,i):
 
 def X_place_nodes(M,n, k,nn):
     return sum(M.X[n,k,nn,i]  for i in M.mn)== M.L[n,k,nn]*M.L[n,k,nn]
-def X_place_nodes_no_double_placement(M,n,k,i):
-    return (0.0,sum(M.X[n,k,nn,i]  for nn in M.nn),1.0)
+def X_place_nodes_no_double_placement(M,n,i):
+    return (0.0,sum(M.X[n,k,nn,i]  for nn in M.nn for k in M.k),1.0)
 def generate_mn_m_n_dics(m,n):
     global dic_mn
     global dic_m_n
@@ -239,7 +239,7 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
 
     M.C1 = Constraint(M.n_steps,M.k,M.nn, rule=X_place_nodes)
     M.C2 = Constraint(M.n_steps,M.k,M.mn, rule=V_paths)
-    M.C3 =Constraint(M.n_steps,M.k,M.mn,rule=X_place_nodes_no_double_placement)
+    M.C3 =Constraint(M.n_steps,M.mn,rule=X_place_nodes_no_double_placement)
 
     M.obj = Objective(rule=J, sense=minimize)
     #M.C2.pprint()
