@@ -42,6 +42,7 @@ def parser(file):
         line=line.replace("\n", "")
         first = line.split("|")
         #print(first)
+        print(first)
         seq_piece=[]
         for ent in first:
             end = ent.split(" ")
@@ -54,7 +55,7 @@ def random_coeff_matrix(m,n):
     C = np.zeros((m,n))
     for i in range(0,m):
         for j in range(0,n):
-            C[i,j] = random.uniform(.1, 10.0)
+            C[i,j] = 1
     return C
 
 def check_in_grid(cory,corx,m,n):
@@ -174,6 +175,9 @@ def X_j(M,n,k,i,j,):
     return sum(M.X[n,k,v,i,j] for v in M.nn for k in M.k)==1.0
 def V_no_overlap(M,n, i,j):
     return sum(M.V[n,k,i,j]+M.V[n,k,j,i]  for k in M.k)<=2
+
+def place_node_once(M,n,nn):
+    return sum(M.X[n,k,nn,i] for k in M.k for i in M.mn)==1
 def V_paths(M,n,k,i):
     global dic_mn
     global dic_node_neighbors
@@ -184,8 +188,16 @@ def V_paths(M,n,k,i):
     #     res2[v] = int(int(res2[v])) 
     return sum(M.V[n,k,i,j] -M.V[n,k,j,i]for j in node_list) == sum(M.X[n,k,p,i]*M.L[n,k,p] for p in M.nn)
 
-def X_place_nodes(M,n, k,nn):
-    return sum(M.X[n,k,nn,i]  for i in M.mn)== M.L[n,k,nn]*M.L[n,k,nn]
+def X_place_nodes(M,n, nn):
+
+    val = None
+    for v in M.k:
+        if(M.L[n,v,nn]!=0):
+            val=1
+            break
+        else:
+            val=0
+    return sum(M.X[n,k,nn,i]  for i in M.mn for k in M.k)== val
 def X_place_nodes_no_double_placement(M,n,i):
     return (0.0,sum(M.X[n,k,nn,i]  for nn in M.nn for k in M.k),1.0)
 def generate_mn_m_n_dics(m,n):
@@ -248,9 +260,10 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
     M.V = Var(M.n_steps,M.k,M.mn,M.mn, domain=Binary)
     M.X = Var(M.n_steps,M.k,M.nn,M.mn, domain=Binary)
 
-    M.C1 = Constraint(M.n_steps,M.k,M.nn, rule=X_place_nodes)
+    M.C1 = Constraint(M.n_steps,M.nn, rule=X_place_nodes)
     M.C2 = Constraint(M.n_steps,M.k,M.mn, rule=V_paths)
     M.C3 =Constraint(M.n_steps,M.mn,rule=X_place_nodes_no_double_placement)
+    #M.C4 =Constraint(M.n_steps,M.nn,rule=place_node_once)
 
     M.obj = Objective(rule=J, sense=minimize)
     #M.C2.pprint()
@@ -322,9 +335,9 @@ def plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X,V,dic_mn,nn):
                     i_j_loc = dic_mn[(node_loc_nm,)]
                     print(i_j_loc )
                     matrix[i_j_loc[0]-1, i_j_loc[1]-1] = 100.0
-                    ax.text(i_j_loc[1]-1, i_j_loc[0]-1, "n_" + str(val), va='center', ha='center')
+                    ax.text(i_j_loc[1]-1, i_j_loc[0]-1, "n_" + str(val), va='center', ha='center',color="k", weight='bold')
         print(matrix)
-        plt.imshow(matrix, cmap = cm.Reds,aspect='auto')
+        plt.imshow(matrix, cmap = cm.spring,aspect='auto')
         plt.title('Step: ' +str(int(t)+1))
         plt.xlabel('n=' +str(n))
         plt.ylabel('m='+str(m))
@@ -362,7 +375,7 @@ def plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X,V,dic_mn,nn):
                     x_temp = [start_i_j[1]-1,next_loc_i_j[1]-1]
                     x,y = np.array([x_temp, y_temp])
                     print(x,y)
-                    line = plt.Line2D(x, y, lw=5., color='r', alpha=0.4)
+                    line = plt.Line2D(x, y, lw=5., color='b', alpha=0.4)
                     line.set_clip_on(False)
                     ax.add_line(line)
                     node_path.append((start,next_loc))
@@ -414,11 +427,11 @@ out=parser("seq.txt")
 # print(random_coeff_matrix(5,5))
 
 file_name="seq.txt"
-m=5
-n=5
-k=2
-n_steps=3
-number_nodes=4
+m=3
+n=3
+k=4
+n_steps=1
+number_nodes=5
 
 
 
