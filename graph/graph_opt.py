@@ -20,6 +20,7 @@ from matplotlib import cm
 from moviepy.editor import VideoClip
 from moviepy.video.io.bindings import mplfig_to_npimage
 import matplotlib.colors as colors
+import re
 
 
 from pyomo.core import *
@@ -30,8 +31,29 @@ dic_mn={}
 dic_m_n={}
 dic_i_j_neighbors={}
 dic_node_neighbors={}
+dic_occurance={}
+
+def count_occurances(max_num,file):
+    global dic_occurance
+    file1 = open(file, 'r')
+    Lines = file1.readlines()
+    line_count=1
+    for line in Lines:
+        line=line.replace("\n", "")
+        line = line.replace("|", " ")
+        line = " " + line
+        line = line + " "
+        for k in range(1,max_num+1):
 
 
+            #line = line.replace("", " ")
+            print(line)
+            dic_occurance[(line_count,k)] = line.split(" ").count(str(k))
+
+
+        line_count+=1
+
+    print(dic_occurance)
 
 def parser(file):
     sequence_list=[]
@@ -178,6 +200,19 @@ def V_no_overlap(M,n, i,j):
 
 def place_node_once(M,n,nn):
     return sum(M.X[n,k,nn,i] for k in M.k for i in M.mn)==1
+# def V_paths(M,n,k,i):
+#     global dic_mn
+#     global dic_node_neighbors
+#     # M.X = Var(M.n_steps,M.k,M.nn,M.nm, domain=Binary)
+#     res2 = get_dic_mn_ele(dic_mn,(i,))
+#     node_list = dic_node_neighbors[(i,)]
+#     # for v in range(0,len(res2)):
+#     #     res2[v] = int(int(res2[v]))
+#     return sum(M.V[n,k,i,j] -M.V[n,k,j,i]for j in node_list) == sum(M.X[n,k,p,i]*M.L[n,k,p] for p in M.nn)
+# def X_place_nodes(M,n, k,nn):
+#     return sum(M.X[n,k,nn,i]  for i in M.mn)== M.L[n,k,nn]*M.L[n,k,nn]
+# def X_place_nodes_no_double_placement(M,n,i):
+#     return (0.0,sum(M.X[n,k,nn,i]  for nn in M.nn for k in M.k),1.0)
 def V_paths(M,n,k,i):
     global dic_mn
     global dic_node_neighbors
@@ -185,21 +220,17 @@ def V_paths(M,n,k,i):
     res2 = get_dic_mn_ele(dic_mn,(i,))
     node_list = dic_node_neighbors[(i,)]
     # for v in range(0,len(res2)):
-    #     res2[v] = int(int(res2[v])) 
+    #     res2[v] = int(int(res2[v]))
     return sum(M.V[n,k,i,j] -M.V[n,k,j,i]for j in node_list) == sum(M.X[n,k,p,i]*M.L[n,k,p] for p in M.nn)
+def X_place_nodes(M,n, k,nn):
+    return sum(M.X[n,k,nn,i]  for i in M.mn)== M.L[n,k,nn]*M.L[n,k,nn]
+def X_place_nodes_no_double_placement(M,n,nn,i):
+    return sum(M.X[n,k,nn,i]  for k in M.k)<=M.Y[n,nn,i]*dic_occurance[(n,nn)]
+def Y_con(M,n,nn):
+    return sum(M.Y[n,nn,i] for i in M.mn)==1
+def Y_contwo(M,n,i):
+    return sum(M.Y[n,nn,i] for nn in M.nn)<=1
 
-def X_place_nodes(M,n, nn):
-
-    val = None
-    for v in M.k:
-        if(M.L[n,v,nn]!=0):
-            val=1
-            break
-        else:
-            val=0
-    return sum(M.X[n,k,nn,i]  for i in M.mn for k in M.k)== val
-def X_place_nodes_no_double_placement(M,n,i):
-    return (0.0,sum(M.X[n,k,nn,i]  for nn in M.nn for k in M.k),1.0)
 def generate_mn_m_n_dics(m,n):
     global dic_mn
     global dic_m_n
@@ -238,6 +269,7 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
     global dic_mn
     seq_list = parser(file)
     generate_mn_m_n_dics(m,n)
+    count_occurances(number_nodes,file)
     C = random_coeff_matrix(m*n,m*n)
     L =loc_matrix(n_steps,k,number_nodes,seq_list)
     print(L)
@@ -253,16 +285,19 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
     M.k = RangeSet(1,k)
     M.nn = RangeSet(1,number_nodes)
     M.C = Param(M.mn,M.mn, initialize=py_c)
-    
+
     M.n_steps = RangeSet(1,n_steps)
     M.L = Param(M.n_steps,M.k,M.nn, initialize=L)
 
     M.V = Var(M.n_steps,M.k,M.mn,M.mn, domain=Binary)
     M.X = Var(M.n_steps,M.k,M.nn,M.mn, domain=Binary)
+    M.Y = Var(M.n_steps,M.nn,M.mn, domain=Binary)
 
-    M.C1 = Constraint(M.n_steps,M.nn, rule=X_place_nodes)
-    M.C2 = Constraint(M.n_steps,M.k,M.mn, rule=V_paths)
-    M.C3 =Constraint(M.n_steps,M.mn,rule=X_place_nodes_no_double_placement)
+    M.C1 = Constraint(M.n_steps, M.k, M.nn, rule=X_place_nodes)
+    M.C2 = Constraint(M.n_steps, M.k, M.mn, rule=V_paths)
+    M.C3 = Constraint(M.n_steps, M.nn,M.mn, rule=X_place_nodes_no_double_placement)
+    M.C4 =Constraint(M.n_steps,M.nn,rule=Y_con)
+    M.C5 =Constraint(M.n_steps,M.mn,rule=Y_contwo)
     #M.C4 =Constraint(M.n_steps,M.nn,rule=place_node_once)
 
     M.obj = Objective(rule=J, sense=minimize)
@@ -295,6 +330,7 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
     print(results)
     print(seq_list)
     plot_time_each_step=1
+    print(dic_occurance)
     plot_graph_time_opt(seq_list,m,n,plot_time_each_step,instance.X,instance.V,dic_mn,number_nodes)
  
 
@@ -434,7 +470,7 @@ n_steps=1
 number_nodes=5
 
 
-
+#count_occurances(number_nodes,"seq.txt")
 graph_opt_fun(m,n,k,n_steps,number_nodes,file_name)
 #print(loc_matrix(3,4,out))
 #matrix (i-1)*j+j
