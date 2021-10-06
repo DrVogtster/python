@@ -108,6 +108,43 @@ def ham_helper():
 
     return (S12.real,S12.imag,S23.real,S23.imag)
 
+def ham_helper_general(ne):
+    S_list_real=[]
+    S_list_imag=[]
+    sigma_x,sigma_y,sigma_z = generate_sigmas_xyz()
+    for i in range(0,ne-1):
+        s_iip1 = s_one(i+1,i+2,sigma_x,sigma_y,sigma_z)
+        S_list_real.append(s_iip1.real)
+        S_list_imag.append(s_iip1.imag)
+
+    return S_list_real,S_list_imag
+
+
+
+def produce_real_part_func_general(t,time_step,v_list,amp_list,s_real_list,a,b,mean,std,dim):
+    m,n = s_real_list[0].shape
+    total_sum_real = zeros((m,m))
+    k_val = int(math.floor(t/time_step))
+    for i in range(0,len(s_list)):
+        u_i = 0
+        for n in range(0,len(amp_list)):
+            u_i = u_i + scaled_trun_func(t,a,b,mean,std,amp_list[n])*v_list[i][k_val,n]
+        total_sum_real = total_sum_real - u_i*s_real_list[i]
+       
+    return total_sum_real
+
+def produce_imag_part_func_general(t,time_step,v_list,amp_list,s_imag_list,a,b,mean,std,dim):
+    m,n = s_real_list[0].shape
+    total_sum_imag = zeros((m,m))
+    k_val = int(math.floor(t/time_step))
+    for i in range(0,len(s_list)):
+        u_i = 0
+        for n in range(0,len(amp_list)):
+            u_i = u_i + scaled_trun_func(t,a,b,mean,std,amp_list[n])*v_list[i][k_val,n]
+        total_sum_imag = total_sum_real - u_i*s_imag_list[i]
+       
+    return total_sum_imag
+
 
 
 def produce_real_part_func(t,v1,v2,amp_list, s12r, s23r,a,b,mean,std,dim):
@@ -140,10 +177,10 @@ def produce_imag_part_func(t,v1,v2,amp_list, s12i, s23i,a,b,mean,std,dim):
 
    
 
-def produce_real_and_imag_ham_funcs(v1,v2,amp_list,a,b,mean,std,dim):
-    s12r,s12i,s23r,s23i = ham_helper()
-    S = lambda t: produce_real_part_func(t,v1,v2,amp_list,s12r,s23r,a,b,mean,std,dim)
-    K = lambda t: produce_imag_part_func(t,v1,v2,amp_list,s12i,s23i,a,b,mean,std,dim)
+def produce_real_and_imag_ham_funcs(time_step,v_list,amp_list,a,b,mean,std,dim):
+    s_real,s_imag = ham_helper_general()
+    S = lambda t: produce_real_part_func_general(t,time_step,v_list,amp_list,s_real,a,b,mean,std,dim)
+    K = lambda t: produce_imag_part_func_general(t,time_step,v_list,amp_list,s_imag,a,b,mean,std,dim)
 
     return (S,K)
 
