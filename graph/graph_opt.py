@@ -334,6 +334,27 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
     plot_graph_time_opt(seq_list,m,n,plot_time_each_step,instance.X,instance.V,dic_mn,number_nodes)
  
 
+
+def produce_output_file(seq_list,m,n,X,V,file_name="output.txt"):
+
+    with open(file_name,'r'):
+        for n in range(1,n_steps):
+            current_level = seq_list[n-1]
+            for k in range(0,len(current_level)):
+                my_string=""
+                    start_n = current_level[k][0]
+                    end_n = current_level[k][1]
+                    start_loc=None
+                    end_loc=None
+                    for i in range(1,m*n+1):
+                        if(X[my_t,k+1,start_n,i]==1):
+                            start_loc =i
+
+                    for i in range(1,m*n+1):
+                        if(X[my_t,k+1,end_n,i]==1):
+                            end_loc =i
+
+
 def plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X,V,dic_mn,nn):
     n_step = len(seq_list)
     nn = []
@@ -386,9 +407,12 @@ def plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X,V,dic_mn,nn):
                 for i in range(1,m*n+1):
                     if(X[my_t,k+1,start_n,i]==1):
                         start_loc =i
+
                 for i in range(1,m*n+1):
                     if(X[my_t,k+1,end_n,i]==1):
                         end_loc =i
+
+
                 # print("-------------")
                 # print(current_level[k])
                 # print(start_n)
