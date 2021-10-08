@@ -1,6 +1,2 @@
-scipy
-matplotlib
-pandas
+moviepy
 pyomo
-cplex
-scikit-learn

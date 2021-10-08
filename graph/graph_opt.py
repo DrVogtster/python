@@ -12,7 +12,7 @@ import math
 import asyncio
 import os
 from sklearn.model_selection import GridSearchCV
-
+import copy
 from matplotlib import pyplot as plt
 import numpy as np
 from matplotlib import cm
@@ -21,6 +21,9 @@ from moviepy.editor import VideoClip
 from moviepy.video.io.bindings import mplfig_to_npimage
 import matplotlib.colors as colors
 import re
+import pickle
+
+
 
 
 from pyomo.core import *
@@ -47,13 +50,13 @@ def count_occurances(max_num,file):
 
 
             #line = line.replace("", " ")
-            print(line)
+            #print(line)
             dic_occurance[(line_count,k)] = line.split(" ").count(str(k))
 
 
         line_count+=1
 
-    print(dic_occurance)
+    #print(dic_occurance)
 
 def parser(file):
     sequence_list=[]
@@ -64,11 +67,11 @@ def parser(file):
         line=line.replace("\n", "")
         first = line.split("|")
         #print(first)
-        print(first)
+        #print(first)
         seq_piece=[]
         for ent in first:
             end = ent.split(" ")
-            print(end)
+            #print(end)
             seq_piece.append([int(end[0]),int(end[1])])
         sequence_list.append(seq_piece)
     return sequence_list
@@ -96,14 +99,14 @@ def generate_neighbors_for_nodes(dic_i_j):
 
     global dic_m_n
     global dic_node_neighbors
-    print(dic_m_n)
+    #print(dic_m_n)
     for key in dic_i_j.keys():
-        print(key)
+        #print(key)
         node_list=[]
         i_j_list = dic_i_j[key]
         
         node_ent = dic_m_n[key]
-        print((node_ent,i_j_list))
+        #print((node_ent,i_j_list))
         for ent in i_j_list:
             node_list.append(dic_m_n[ent])
         dic_node_neighbors[(node_ent,)] = node_list
@@ -142,7 +145,7 @@ def mat_func3d(input_mat):
     # return H
 
     (y_size,x_size,z_size) = input_mat.shape
-    print(input_mat.shape)
+    #print(input_mat.shape)
     H = {}
     for i in range(1,y_size+1):
         for j in range(1,x_size+1):
@@ -190,8 +193,8 @@ def vec_func(self,input_vec):
 
 
 def X_i(M,n,nn):
-    print(n)
-    print(type(n))
+    # print(n)
+    # print(type(n))
     return sum(M.X[n,k,nn,i,j] for i in M.m for j in M.n for k in M.k)==1.0
 def X_j(M,n,k,i,j,):
     return sum(M.X[n,k,v,i,j] for v in M.nn for k in M.k)==1.0
@@ -265,14 +268,14 @@ def loc_matrix(step,pairs,nn,seq_list):
             loc_mat[n,k,piece[0]-1]=1
             loc_mat[n,k,piece[1]-1]=-1
     return loc_mat
-def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
+def graph_opt_fun(m,n,k,n_steps,number_nodes,file,make_movie,produce_output,pkl_name,solver):
     global dic_mn
     seq_list = parser(file)
     generate_mn_m_n_dics(m,n)
     count_occurances(number_nodes,file)
     C = random_coeff_matrix(m*n,m*n)
     L =loc_matrix(n_steps,k,number_nodes,seq_list)
-    print(L)
+    #print(L)
     L =mat_func3d(L)
 
     my_dic_i_j = generate_neighbors_for_graph_i_j(m,n)
@@ -305,11 +308,11 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
   
 
     instance = M.create_instance()
-    instance.pprint()
+    #instance.pprint()
    
     # results=SolverFactory('mindtpy').solve(instance,strategy='OA',
     #                             time_limit=3600, mip_solver='glpk', nlp_solver='ipopt',tee=True)
-    opt = SolverFactory("glpk")
+    opt = SolverFactory(solver)
     results=opt.solve(instance,tee=True)
 
     instance.solutions.store_to(results)
@@ -327,34 +330,75 @@ def graph_opt_fun(m,n,k,n_steps,number_nodes,file):
     # print(instance.X[1,1,2,1,2].value)
     #print(sum(instance.X[1,1,k,i,j].value for k in M.nn for i in M.m for j in M.n ))
     #print(sum(instance.V[1,2,i,j].value for i in M.m for j in M.n ))
-    print(results)
-    print(seq_list)
+    # print(results)
+    # print(seq_list)
     plot_time_each_step=1
-    print(dic_occurance)
-    plot_graph_time_opt(seq_list,m,n,plot_time_each_step,instance.X,instance.V,dic_mn,number_nodes)
- 
+    
+    X_in = instance.X
+    V_in = instance.V
+    if(make_movie):
+        plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X_in,V_in,dic_mn,number_nodes)
+    dic_list=produce_dic(seq_list,m,n,X_in,V_in,n_steps,produce_output,pkl_name)
 
 
-def produce_output_file(seq_list,m,n,X,V,file_name="output.txt"):
+def produce_dic(seq_list,m,n,X,V,n_steps,produce_file,file_name):
+    global dic_mn
+    out_dic={}
+  
+    for n_val in range(0,n_steps):
+        current_level = seq_list[n_val]
+        #print(len(current_level))
+        my_t = n_val+1
 
-    with open(file_name,'r'):
-        for n in range(1,n_steps):
-            current_level = seq_list[n-1]
-            for k in range(0,len(current_level)):
-                my_string=""
-                    start_n = current_level[k][0]
-                    end_n = current_level[k][1]
-                    start_loc=None
-                    end_loc=None
-                    for i in range(1,m*n+1):
-                        if(X[my_t,k+1,start_n,i]==1):
-                            start_loc =i
+        for k in range(0,len(current_level)):
+            k_dic={}
+            start_n = current_level[k][0]
+            end_n = current_level[k][1]
+            start_loc=None
+            end_loc=None
+            #print(range(1,m*n+1))
+            #print(m*n)
+            for i in range(1,m*n+1):
+               
+                if(X[my_t,k+1,start_n,i].value==1):
+                    start_loc =i
 
-                    for i in range(1,m*n+1):
-                        if(X[my_t,k+1,end_n,i]==1):
-                            end_loc =i
+            for i in range(1,m*n+1):
+                if(X[my_t,k+1,end_n,i].value==1):
+                    end_loc =i
+            #print((start_n,end_n))
+            node_place = [(start_n, dic_mn[(start_loc,)]),(end_n, dic_mn[(end_loc,) ])]
+            path =[]
+            start = start_loc
+            end= end_loc
+            node_path =[]
+            i_j_path = []
+            #print(node_place)
+            counter=0
+            while(start!=end):
 
-
+                start_i_j = dic_mn[(start,)]
+                if(counter==0):
+                    path.append(start_i_j) 
+                    counter+=1 
+                next_loc = None
+                for i in range(1,m*n+1):
+                    if(V[my_t,k+1,start,i].value==1):
+                        next_loc=i
+                        break
+                next_loc_i_j = dic_mn[(next_loc,)]
+                start = next_loc
+                path.append(next_loc_i_j)
+            k_dic["node_place"] = node_place
+            k_dic["path"] = path
+            out_dic[(my_t,k+1)] = k_dic
+    temp = copy.deepcopy(out_dic)
+    if(produce_file):
+        filehandler = open(file_name,"wb")
+        pickle.dump(out_dic,filehandler)
+        filehandler.close()
+    #print(temp)
+    return temp      
 def plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X,V,dic_mn,nn):
     n_step = len(seq_list)
     nn = []
@@ -385,15 +429,15 @@ def plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X,V,dic_mn,nn):
                     val = current_level[k][i]
                     node_loc_nm = None
                     for j in range(1,m*n+1):
-                        if(X[my_t,k+1,val,j]==1):
+                        if(X[my_t,k+1,val,j].value==1):
                             node_loc_nm=j
                            
                             break
                     i_j_loc = dic_mn[(node_loc_nm,)]
-                    print(i_j_loc )
+                    #print(i_j_loc )
                     matrix[i_j_loc[0]-1, i_j_loc[1]-1] = 100.0
                     ax.text(i_j_loc[1]-1, i_j_loc[0]-1, "n_" + str(val), va='center', ha='center',color="k", weight='bold')
-        print(matrix)
+        #print(matrix)
         plt.imshow(matrix, cmap = cm.spring,aspect='auto')
         plt.title('Step: ' +str(int(t)+1))
         plt.xlabel('n=' +str(n))
@@ -405,11 +449,11 @@ def plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X,V,dic_mn,nn):
                 start_loc=None
                 end_loc=None
                 for i in range(1,m*n+1):
-                    if(X[my_t,k+1,start_n,i]==1):
+                    if(X[my_t,k+1,start_n,i].value==1):
                         start_loc =i
 
                 for i in range(1,m*n+1):
-                    if(X[my_t,k+1,end_n,i]==1):
+                    if(X[my_t,k+1,end_n,i].value==1):
                         end_loc =i
 
 
@@ -427,14 +471,15 @@ def plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X,V,dic_mn,nn):
                     start_i_j = dic_mn[(start,)]
                     next_loc = None
                     for i in range(1,m*n+1):
-                        if(V[my_t,k+1,start,i]==1):
+                        
+                        if(V[my_t,k+1,start,i].value==1):
                             next_loc=i
                             break
                     next_loc_i_j = dic_mn[(next_loc,)]
                     y_temp = [start_i_j[0]-1,next_loc_i_j[0]-1]
                     x_temp = [start_i_j[1]-1,next_loc_i_j[1]-1]
                     x,y = np.array([x_temp, y_temp])
-                    print(x,y)
+                    #print(x,y)
                     line = plt.Line2D(x, y, lw=5., color='b', alpha=0.4)
                     line.set_clip_on(False)
                     ax.add_line(line)
@@ -442,8 +487,8 @@ def plot_graph_time_opt(seq_list,m,n,plot_time_each_step,X,V,dic_mn,nn):
                     i_j_path.append((start_i_j,next_loc_i_j))
                     start = next_loc
 
-                print("NODE PATH " +str(node_path))
-                print("i_j PATH " +str(i_j_path))
+                # print("NODE PATH " +str(node_path))
+                # print("i_j PATH " +str(i_j_path))
 
                 
         
@@ -492,9 +537,11 @@ n=3
 k=4
 n_steps=1
 number_nodes=5
-
-
+make_movie=True
+produce_pkl = True
+pkl_name="outputnow.pkl"
+solver="cplex"
 #count_occurances(number_nodes,"seq.txt")
-graph_opt_fun(m,n,k,n_steps,number_nodes,file_name)
+graph_opt_fun(m,n,k,n_steps,number_nodes,file_name,make_movie,produce_pkl,pkl_name,solver)
 #print(loc_matrix(3,4,out))
 #matrix (i-1)*j+j

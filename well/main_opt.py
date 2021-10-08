@@ -54,6 +54,13 @@ def true_v(t):
     n=5
     return -np.eye(n)*math.sin(t)
 
+def creat_matrix_from_vector(vector,p,m,n):
+    matrix_list=[]
+    for i in range(0,p):
+        v_i  = vector[i*m*n:(i+1)*m*n]
+        v_i_mat = np.reshape(v_i,(m,n))
+        matrix_list.append(v_i_mat)
+    return matrix_list  
 
 def convergence_test():
 
@@ -229,7 +236,33 @@ def stromer_verlet(S_func,K_func,T_max,nt,gu,gv,dim,h_plank,fu_s_func,fv_s_func)
         solution_list[:,:,i] = u_np1-1j*v_np1 
     return (solution_list,solution_list[:,:,-1])
 
+def ten_pen(k):
+    return 10.0**k
 
-convergence_test()
+def fid_leak_obj(U,V,basis_list):
 
+    size = len(basis_list)
+    U_hat = np.zeros((size,size))
+    bad_states=[]
+    for i in range(0,size):
+        for j in range(0,size):
+
+            U_hat[i,j] = np.transpose(basis_list[i])*U*basis_list[j]
+            if(V[i,j]==0.0):
+                bad_states.append((basis_list[i],basis_list[j]))
+    M = (V.H)*U_hat
+    TrM = np.trace(M)
+    TrMr = TrM.real
+    TrMi = TrM.imag
+    mod_squared = TrMr**2 + TrMi**2
+    fid = (1.0)/(size*(size+1))*(np.trace(M*M.H) + mod_squared )
+
+    #pederson
+
+
+def GA_penalty(pen_func):
+    pass
+#convergence_test()
+x=creat_matrix_from_vector(np.asarray(list(range(1,13))),3,2,2)
+print(x)
 #main

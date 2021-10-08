@@ -44,9 +44,9 @@ RUN /home/linuxbrew/.linuxbrew/bin/brew install glpk
 
 
 FROM python:3.8-slim-buster
-COPY requirements2.txt requirements2.txt
+#COPY requirements2.txt requirements2.txt
 COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements2.txt
+#RUN pip3 install -r requirements2.txt
 RUN pip install -r requirements.txt
 COPY . .
 

@@ -4,3 +4,4 @@ pandas
 pyomo
 cplex
 scikit-learn
+moviepy
