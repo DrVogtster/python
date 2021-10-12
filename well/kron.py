@@ -1,6 +1,37 @@
 import numpy as np
 from numpy.lib.shape_base import kron
 import math
+accum_list=[]
+def printTheArray(arr, n):
+    tem = []
+    for i in range(0, n):
+        print(arr[i], end = " ")
+        tem.append(arr[i])
+    accum_list.append(tem)
+     
+    print()
+ 
+# Function to generate all binary strings
+def generateAllBinaryStrings(n, arr, i):
+    global accum_list
+    if i == n:
+        printTheArray(arr, n)
+        
+        return
+     
+    # First assign "0" at ith position
+    # and try for all other permutations
+    # for remaining positions
+    arr[i] = 0
+    generateAllBinaryStrings(n, arr, i + 1)
+ 
+    # And then assign "1" at ith position
+    # and try for all other permutations
+    # for remaining positions
+    arr[i] = 1
+    generateAllBinaryStrings(n, arr, i + 1)
+ 
+
 
 def matprint(mat, fmt="g"):
     col_maxes = [max([len(("{:"+fmt+"}").format(x)) for x in col]) for col in mat.T]
@@ -36,6 +67,44 @@ def ket_gen(order):
 
         k=k-1    
     return temp
+
+def ket_gen_dfs(e0,e1,nq,com_list):
+    if(nq ==1):
+        return [e0,e1]
+    
+
+    out_list=[] 
+    
+    for p in com_list:
+        temp =np.kron(ret_vec(order[-2],e0,e1),ret_vec(order[-1],e0,e1))
+        k = len(order)-3
+        while(k>=0):
+            if(order[k]==0):
+                temp = np.kron(e0,temp)
+            else:
+                temp = np.kron(e1,temp)
+
+            k=k-1  
+        out_list.append(temp)  
+    return out_list
+
+
+
+
+def ket_gen(order):
+    e0=np.asarray([1,0])
+    e1=np.asarray([0,1])
+    k = len(order)-3
+    temp =np.kron(ret_vec(order[-2],e0,e1),ret_vec(order[-1],e0,e1)) 
+    while(k>=0):
+        if(order[k]==0):
+            temp = np.kron(e0,temp)
+        else:
+            temp = np.kron(e1,temp)
+
+        k=k-1    
+    return temp
+
 
 def get_vec(string):
     con_s = convert_str_to_list(string)
@@ -77,8 +146,8 @@ def dfs_0_1(gamma,sigma,f_mat):
     return dfs_0,dfs_1
 
 #dont scale by .25
-def s_one(m,n,sigma_x,sigma_y,sigma_z):
-    k_max=3
+def s_one(m,n,sigma_x,sigma_y,sigma_z,k_max):
+    #k_max=3
     dim=2
     return (sigmas_n(m,sigma_x,k_max,dim)*sigmas_n(n,sigma_x,k_max,dim) + sigmas_n(m,sigma_y,k_max,dim)*sigmas_n(n,sigma_y,k_max,dim) + sigmas_n(m,sigma_z,k_max,dim)*sigmas_n(n,sigma_z,k_max,dim))
 
@@ -126,14 +195,14 @@ def sigmas_n(n,sigma,k_max,dim):
 
 
 
-x=fong_gen_single()
-matprint(x)
-for i in range(0,8):
-    print(np.linalg.norm(x[:,i]))
+# x=fong_gen_single()
+# matprint(x)
+# for i in range(0,8):
+#     print(np.linalg.norm(x[:,i]))
 
-# gamma=.5
-# sigma=.5
-# y=dfs_0_1(gamma,sigma,x)
+# # gamma=.5
+# # sigma=.5
+# # y=dfs_0_1(gamma,sigma,x)
 # print(y)
 # print(10)
 

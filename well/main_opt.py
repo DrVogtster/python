@@ -5,7 +5,8 @@ import math
 import numpy as np
 from scipy import linalg
 from kron import *
-
+accum_list=[]
+mydic={}
 
 def scaled_trun_func(input,a,b,mean,std,scale):
     myclip_a =a
@@ -128,10 +129,14 @@ def ham_helper_general(ne):
 
 
 
-def produce_real_part_func_general(t,time_step,v_list,amp_list,s_real_list,a,b,mean,std,dim):
+def produce_real_part_func_general(t,time_step,v_list,amp_list,s_real_list,dim,time_list):
     m,n = s_real_list[0].shape
     total_sum_real = zeros((m,m))
     k_val = int(math.floor(t/time_step))
+    a = time_list[k_val][0]
+    b = time_list[k_val][1]
+    mean = (a+b)/2.0
+    std=1.0
     for i in range(0,len(s_list)):
         u_i = 0
         for n in range(0,len(amp_list)):
@@ -140,10 +145,14 @@ def produce_real_part_func_general(t,time_step,v_list,amp_list,s_real_list,a,b,m
        
     return total_sum_real
 
-def produce_imag_part_func_general(t,time_step,v_list,amp_list,s_imag_list,a,b,mean,std,dim):
-    m,n = s_real_list[0].shape
+def produce_imag_part_func_general(t,time_step,v_list,amp_list,s_imag_list,dim,time_list):
+    m,n = s_imag_list[0].shape
     total_sum_imag = zeros((m,m))
     k_val = int(math.floor(t/time_step))
+    a = time_list[k_val][0]
+    b = time_list[k_val][1]
+    mean = (a+b)/2.0
+    std=1.0
     for i in range(0,len(s_list)):
         u_i = 0
         for n in range(0,len(amp_list)):
@@ -184,6 +193,16 @@ def produce_imag_part_func(t,v1,v2,amp_list, s12i, s23i,a,b,mean,std,dim):
 
    
 
+ def produce_real_and_imag_ham_funcs_general(time_step,v_list,amp_list,a,b,mean,std,dim):
+    global mydic
+    time_step = mydic["dt"]
+    v_list = mydic["v"]
+    
+    S = lambda t:produce_real_part_func_general(t,time_step,v_list,amp_list,s_real_list,dim,time_list)
+    K = lambda t:produce_imag_part_func_general(t,time_step,v_list,amp_list,s_real_list,dim,time_list)
+ 
+    return (S,K)
+
 def produce_real_and_imag_ham_funcs(time_step,v_list,amp_list,a,b,mean,std,dim):
     s_real,s_imag = ham_helper_general()
     S = lambda t: produce_real_part_func_general(t,time_step,v_list,amp_list,s_real,a,b,mean,std,dim)
@@ -193,7 +212,7 @@ def produce_real_and_imag_ham_funcs(time_step,v_list,amp_list,a,b,mean,std,dim):
 
 
 
-#only works for h=1 right now
+
 def stromer_verlet(S_func,K_func,T_max,nt,gu,gv,dim,h_plank,fu_s_func,fv_s_func):
     S = lambda t : S_func(t)/h_plank
     K = lambda t : K_func(t)/h_plank
@@ -256,13 +275,203 @@ def fid_leak_obj(U,V,basis_list):
     TrMi = TrM.imag
     mod_squared = TrMr**2 + TrMi**2
     fid = (1.0)/(size*(size+1))*(np.trace(M*M.H) + mod_squared )
-
+    leak = 0 
+    # for k in range(0,len(bad_states)):
+    #     leak = leak + np.abs(np.transpose(bad_states[k][0]*U*bad_states[k][1]))**2
+    return fid+leak
     #pederson
 
 
-def GA_penalty(pen_func):
+# Python3 implementation of the
+# above approach
+ 
+# Function to print the output
+def printTheArray(arr, n):
+    tem = []
+    for i in range(0, n):
+        print(arr[i], end = " ")
+        tem.append(arr[i])
+    accum_list.append(tem)
+     
+    print()
+ 
+# Function to generate all binary strings
+def generateAllBinaryStrings(n, arr, i):
+    global accum_list
+    if i == n:
+        printTheArray(arr, n)
+        
+        return
+     
+    # First assign "0" at ith position
+    # and try for all other permutations
+    # for remaining positions
+    arr[i] = 0
+    generateAllBinaryStrings(n, arr, i + 1)
+ 
+    # And then assign "1" at ith position
+    # and try for all other permutations
+    # for remaining positions
+    arr[i] = 1
+    generateAllBinaryStrings(n, arr, i + 1)
+ 
+# # Driver Code
+# if __name__ == "__main__":
+ 
+#     n = 4
+#     arr = [None] * n
+ 
+#     # Print all binary strings
+#     generateAllBinaryStrings(n, arr, 0)
+
+def generate_basis_list(n_e):
+    n = int(n_e/3)
+    arr = [None] * n
+    generateAllBinaryStrings(n, arr, 0)
+
+def generate_pen_term(v,weight,Nc,Nt,Np,neighbor_list)
+
+    mysum = 0.0
+    for i in range(0,Nt):
+        
+        for k in range(0,Nc):
+            this_sum =0.0
+            neighbors = neighbor_list[k]
+            for n in neighbors:
+                this_sum = this_sum + np.sum(v[n][i,:])
+                
+            this_sum = max(0,this_sum-1)
+        mysum = mysum + weight*this_sum
+    return mysum
+
+
+            
+                
+
+def GA_helper(solution, solution_idx):
+    global mydic
+    v=solution
+    Nc=mydic["Nc"] 
+    Np=mydic["Np"] 
+    Nt=mydic["Nt"] 
+    basis = mydic["basis"]
+    amp_list = mydic["amp"]
+    gate=mydic["gate"] 
+    nl  = mydic["nl"]
+    v_list= creat_matrix_from_vector(v,Nc,Nt,Np)
+
+    pen_term = generate_pen_term(v,1000,Nc,Nt,Np,nl)
+
+    
     pass
+
+
+
+def GA_penalty():
+
+    global mydic
+
+    Nc=mydic["Nc"] 
+    Np=mydic["Np"] 
+    Nt=mydic["Nt"] 
+
+    
+    
+    ga_instance = pygad.GA(num_generations=1000,
+                       num_parents_mating=2,
+                       sol_per_pop=10,
+                       num_genes=Nc*Np*Nt,
+                       fitness_func=GA_helper,gene_space=[0, 1],save_best_solutions=True)
+    ga.run()
+    a=ga_instance.best_solutions
+    b=ga_instance.best_solutions_fitness
+    my_list=[]
+    for i in range(0,len(a)):
+        #print(b[i],a[i])
+        my_list.append((b[i],a[i]))
+
+    my_list.sort(key=lambda tup: tup[0]) 
+    best_obj = my_list[0][0]
+    counter=0
+    best_sols=[]
+    still_collecting=True
+    while(still_collecting):
+        if(best_obj == my_list[counter][0]):
+            best_sols.append(my_list[counter][1])
+        else:
+            still_collecting=False
+        counter+=1
+    return (best_obj,best_sols)
+
+
+def GA_routine(number_e,gate,T,dt,amp_list):
+    global accum_list
+    global mydic
+    mydic={}
+    Nt = int(T/dt)
+    Np = len(amp_list)
+    Nc = number_e-1
+    pen_fun = lambda k: ten_pen(k)
+    sigma_x,sigma_y,sigma_z=generate_sigmas_xyz()
+    real_list=[]
+    imag_list=[]
+    time_list=[]
+    for i in range(0,Nt):
+        time_list.append(i*dt,(i+1)*dt)
+    for i in range(1,number_e):
+        s_iip1 = s_one(i,i+1,sigma_x,sigma_y,sigma_z,number_e)
+        real_list.append(s_iip1.real)
+        imag_list.append(s_iip1.imag)
+
+    neighbor_list=[]
+    for i in range(1,number_e+1):
+        temp=[]
+        lef = i-1
+        cen = i 
+        right = i+1
+        if(1 >= lef and lef <=number_e ):
+            temp.append(lef)
+        if(1 >= cen and cen <=number_e ):
+            temp.append(cen)
+        if(1 >= right and right <=number_e ):
+            temp.append(right)
+
+        neighbor_list.append(temp)
+    
+    mydic["nl"] = neighbor_list
+
+
+    x=fong_gen_single()
+    accum_list=[]
+    arr = [None] * number_e
+    generateAllBinaryStrings(number_e, arr, 0)
+    gamma=1
+    sigma=0
+    e0,e1=dfs_0_1(gamma,sigma,x)
+    basis_list=ket_gen_dfs(e0,e1,number_e,accum_list)
+    mydic["basis"] = basis_list
+    mydic["amp"] = amp_list
+    mydic["gate"] = gate
+    mydic["rl"] = real_list
+    mydic["il"] = imag_list
+    mydic["Nc"] = Nc
+    mydic["Np"] = Np
+    mydic["Nt"] = Nt 
+    mydic["T"] = T 
+    mydic["dt"] = dt 
+
+    GA_penalty()
+
+
+
+T=500
+dt = 10
+amp_list=[math.pi/2.0,math.pi,(3.0/4.0)*math.pi]
+
+arr = [None] * 2
+generateAllBinaryStrings(2, arr, 0)
+print(accum_list)
 #convergence_test()
-x=creat_matrix_from_vector(np.asarray(list(range(1,13))),3,2,2)
-print(x)
+# x=creat_matrix_from_vector(np.asarray(list(range(1,13))),3,2,2)
+# print(x)
 #main
