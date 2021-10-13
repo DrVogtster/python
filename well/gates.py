@@ -7,7 +7,7 @@ def H_gate():
     H[0,1] = 1
     H[1,0] = 1
     H[1,1] = -1
-    H = (1.0.math.sqrt(2))*H
+    H = (1.0/math.sqrt(2))*H
     return H 
 def Z_theta(theta):
     Z = np.zeros((2,2))
@@ -27,3 +27,13 @@ def C_gate():
     C[3,2]=1
     C[2,3]=1
     return C
+
+
+def generate_gate_lists_one():
+    gate_list=[]
+    funcs = [H_gate,P_gate,T_gate]
+    for f in funcs:
+        gate_list.append(f())
+
+    return gate_list
+

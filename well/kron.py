@@ -76,6 +76,7 @@ def ket_gen_dfs(e0,e1,nq,com_list):
     out_list=[] 
     
     for p in com_list:
+        order = p
         temp =np.kron(ret_vec(order[-2],e0,e1),ret_vec(order[-1],e0,e1))
         k = len(order)-3
         while(k>=0):
@@ -149,7 +150,7 @@ def dfs_0_1(gamma,sigma,f_mat):
 def s_one(m,n,sigma_x,sigma_y,sigma_z,k_max):
     #k_max=3
     dim=2
-    return (sigmas_n(m,sigma_x,k_max,dim)*sigmas_n(n,sigma_x,k_max,dim) + sigmas_n(m,sigma_y,k_max,dim)*sigmas_n(n,sigma_y,k_max,dim) + sigmas_n(m,sigma_z,k_max,dim)*sigmas_n(n,sigma_z,k_max,dim))
+    return .25*(sigmas_n(m,sigma_x,k_max,dim)*sigmas_n(n,sigma_x,k_max,dim) + sigmas_n(m,sigma_y,k_max,dim)*sigmas_n(n,sigma_y,k_max,dim) + sigmas_n(m,sigma_z,k_max,dim)*sigmas_n(n,sigma_z,k_max,dim))
 
 def generate_sigmas_xyz():
     sigma_x = np.zeros((2,2), dtype=complex)
