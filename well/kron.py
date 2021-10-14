@@ -147,10 +147,12 @@ def dfs_0_1(gamma,sigma,f_mat):
     return dfs_0,dfs_1
 
 #dont scale by .25
-def s_one(m,n,sigma_x,sigma_y,sigma_z,k_max):
-    #k_max=3
+def s_one(m,n,sigma_x,sigma_y,sigma_z,k_min,k_max):
+    #k_min=3
     dim=2
-    return .25*(sigmas_n(m,sigma_x,k_max,dim)*sigmas_n(n,sigma_x,k_max,dim) + sigmas_n(m,sigma_y,k_max,dim)*sigmas_n(n,sigma_y,k_max,dim) + sigmas_n(m,sigma_z,k_max,dim)*sigmas_n(n,sigma_z,k_max,dim))
+    matprint(.25*(sigmas_n(m,sigma_x,k_min,k_max,dim)@sigmas_n(n,sigma_x,k_min,k_max,dim) + sigmas_n(m,sigma_y,k_min,k_max,dim)@sigmas_n(n,sigma_y,k_min,k_max,dim) + sigmas_n(m,sigma_z,k_min,k_max,dim)@sigmas_n(n,sigma_z,k_min,k_max,dim))
+)
+    return .25*(sigmas_n(m,sigma_x,k_min,k_max,dim)@sigmas_n(n,sigma_x,k_min,k_max,dim) + sigmas_n(m,sigma_y,k_min,k_max,dim)@sigmas_n(n,sigma_y,k_min,k_max,dim) + sigmas_n(m,sigma_z,k_min,k_max,dim)@sigmas_n(n,sigma_z,k_min,k_max,dim))
 
 def generate_sigmas_xyz():
     sigma_x = np.zeros((2,2), dtype=complex)
@@ -170,7 +172,7 @@ def generate_sigmas_xyz():
 
 
 
-def sigmas_n(n,sigma,k_max,dim):
+def sigmas_n(n,sigma,k_min,k_max,dim):
     eye = np.eye(dim)
     start=None
     if(k_max==n):
@@ -181,17 +183,20 @@ def sigmas_n(n,sigma,k_max,dim):
         start=np.kron(eye,eye)    
 
 
-    k_max=k_max-2
+    k_max = k_max-2
     while(k_max>=1):
         if(k_max==n):
             start = np.kron(sigma,start)
         else:
-            start = np.kron(eye, start)
+            start = np.kron(eye,start)
 
 
         
-        k_max=k_max-1
-        print(start)
+        k_max = k_max-1
+    # print("lol")
+    # print(start)
+    # print(n)
+    matprint(start)
     return start
 
 

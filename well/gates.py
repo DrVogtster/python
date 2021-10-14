@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import cmath
 #CHPT gates
 def H_gate():
     H = np.zeros((2,2))
@@ -10,10 +11,11 @@ def H_gate():
     H = (1.0/math.sqrt(2))*H
     return H 
 def Z_theta(theta):
-    Z = np.zeros((2,2))
+    Z = np.zeros((2,2), dtype="complex_")
     itheta = 1j*theta
     Z[0,0]  =1
-    Z[1,1] = np.exp(itheta)
+    Z[1,1] = cmath.exp(itheta)
+    return Z
 
 def P_gate():
     return Z_theta(math.pi/2.0)
@@ -37,3 +39,4 @@ def generate_gate_lists_one():
 
     return gate_list
 
+print(generate_gate_lists_one())

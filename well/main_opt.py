@@ -2,11 +2,21 @@ from scipy.stats import truncnorm
 import matplotlib.pyplot as plt
 import math
 import numpy as np
-from scipy import linalg
+import scipy
 from kron import *
 from gates import *
 import pygad
+from matplotlib import cm
+from matplotlib import colors
+from scoop import futures
+import multiprocessing
+import os
 
+from deap import base
+from deap import creator
+from deap import tools
+import random, numpy as np
+import matplotlib.pyplot as plt
 from moviepy.editor import VideoClip
 from moviepy.video.io.bindings import mplfig_to_npimage
 
@@ -292,16 +302,34 @@ def ten_pen(k):
     return 10.0 ** k
 
 
+def produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list,H_list,dim):
+    global mydic
+    sol = np.eye(dim)
+    Np = mydic["Np"]
+    for k in range(0,Nt):
+        H_temp = np.zeros((dim,dim))
+        for i in range(0,Nc):
+            for p in range(0,Np):
+            
+                H_temp = H_temp + v_list[i][k,p]*H_list[i]*((amp_list[p])/dt)
+        cur_sol = scipy.linalg.expm(-1j*dt*(H_temp)/plank)
+        sol =  np.matmul(cur_sol,sol)
+    return sol
+
+
+
+
+
 def fid_leak_obj(U, V, basis_list):
     size = len(basis_list)
     U_hat = np.zeros((size, size),dtype = 'complex_')
     bad_states = []
     for i in range(0, size):
         for j in range(0, size):
-            print(basis_list[i])
-            print(basis_list[j])
+            # print(basis_list[i])
+            # print(basis_list[j])
             U_hat[i, j] = np.dot(basis_list[i], U @ basis_list[j])
-            print(U_hat[i,j])
+            # print(U_hat[i,j])
             #U_hat[i,j] = (basis_list[i].T.dot(U)*basis_list[j].T).sum(axis=1)
             if (V[i, j] == 0.0):
                 bad_states.append((basis_list[i], basis_list[j]))
@@ -368,7 +396,28 @@ def generate_basis_list(n_e):
     generateAllBinaryStrings(n, arr, 0)
 
 
-def fid_routine(v, plank):
+
+def fid_routine_constant(v,plank):
+    dim = mydic["dim"]
+    Nc = mydic["Nc"]
+    Np = mydic["Np"]
+    Nt = mydic["Nt"]
+    basis = mydic["basis"]
+    mydic["v"] = v
+    amp_list = mydic["amp"]
+    gate = mydic["gate"]
+    nl = mydic["nl"]
+    plank = mydic["p"]
+    T_max = mydic["T"]
+    dt = mydic["dt"]
+    v_list=v
+    H_list = mydic["H"]
+    U = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list,H_list,dim)
+    obj = fid_leak_obj(U, gate, basis)
+    return obj
+
+
+def fid_routine_time(v, plank):
     dim = mydic["dim"]
     Nc = mydic["Nc"]
     Np = mydic["Np"]
@@ -407,7 +456,28 @@ def generate_pen_term(v, weight, Nc, Nt, Np, neighbor_list):
     return mysum
 
 
-def GA_helper(solution, solution_idx):
+
+# def GA_helper_constant_deap(solution, solution_idx):
+#     global mydic
+#     v = solution
+#     Nc = mydic["Nc"]
+#     Np = mydic["Np"]
+#     Nt = mydic["Nt"]
+#     basis = mydic["basis"]
+#     amp_list = mydic["amp"]
+#     gate = mydic["gate"]
+#     nl = mydic["nl"]
+#     plank = mydic["p"]
+#     v_list = creat_matrix_from_vector(v, Nc, Nt, Np)
+
+#     pen_term = generate_pen_term(v_list, 1000, Nc, Nt, Np, nl)
+#     fid = fid_routine_constant(v_list, plank)
+
+#     print((fid,pen_term))
+#     return fid
+
+
+def GA_helper_constant(solution, solution_idx):
     global mydic
     v = solution
     Nc = mydic["Nc"]
@@ -421,14 +491,441 @@ def GA_helper(solution, solution_idx):
     v_list = creat_matrix_from_vector(v, Nc, Nt, Np)
 
     pen_term = generate_pen_term(v_list, 1000, Nc, Nt, Np, nl)
-    fid = fid_routine(v_list, plank)
+    fid = fid_routine_constant(v_list, plank)
 
     print((fid,pen_term))
-    return fid + pen_term
+    return (fid - pen_term)
 
-
-def GA_penalty():
+def GA_penalty_constant_deap():
     global mydic
+    global temp
+    Nc = mydic["Nc"]
+    Np = mydic["Np"]
+    Nt = mydic["Nt"]
+    no_of_generations = 1000 # decide, iterations
+
+    # decide, population size or no of individuals or solutions being considered in each generation
+    population_size = 100000
+
+    # chromosome (also called individual) in DEAP
+    # length of the individual or chrosome should be divisible by no. of variables 
+    # is a series of 0s and 1s in Genetic Algorithm
+
+    # here, one individual may be 
+    # [1,0,1,1,1,0,......,0,1,1,0,0,0,0] of length 100
+    # each element is called a gene or allele or simply a bit
+    # Individual in bit form is called a Genotype and is decoded to attain the Phenotype i.e. the 
+    size_of_individual = Nc*Nt*Np
+
+    # above, higher the better but uses higher resources
+
+    # we are using bit flip as mutation,
+    # probability that a gene or allele will mutate or flip, 
+    # generally kept low, high means more random jumps or deviation from parents, which is generally not desired
+    probability_of_mutation = 0.05 
+
+    # no. of participants in Tournament selection
+    # to implement strategy to select parents which will mate to produce offspring
+    tournSel_k = 10 
+
+    # no, of variables which will vary,here we have x and y
+    # this is so because both variables are of same length and are represented by one individual
+    # here first 50 bits/genes represent x and the rest 50 represnt y.
+    no_of_variables = Nc*Nt*Np
+
+    # bounds = [(-6,6),(-6,6)] # one tuple or pair of lower bound and upper bound for each variable
+    # # same for both variables in our problem 
+    bounds =[]
+    for i in range(0,no_of_variables):
+        bounds.append((0,1))
+    # CXPB  is the probability with which two individuals
+    #       are crossed or mated
+    # MUTPB is the probability for mutating an individual
+    CXPB, MUTPB = 0.5, 0.2
+
+
+    creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+
+    # an Individual is a list with one more attribute called fitness
+    creator.create("Individual", list, fitness=creator.FitnessMin)
+    toolbox = base.Toolbox()
+    toolbox.register("map", futures.map)
+
+    # Attribute generator, generation function 
+    # toolbox.attr_bool(), when called, will draw a random integer between 0 and 1
+    # it is equivalent to random.randint(0,1)
+    toolbox.register("attr_bool", random.randint, 0, 1)
+
+    # here give the no. of bits in an individual i.e. size_of_individual, here 100
+    # depends upon decoding strategy, which uses precision
+    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_bool, size_of_individual) 
+    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+    def check_feasiblity(individual):
+        #print(individual)
+        global mydic
+        Nc = mydic["Nc"]
+        Np = mydic["Np"]
+        Nt = mydic["Nt"]
+        individual = decode_all_x(individual,no_of_variables,bounds)
+        v = creat_matrix_from_vector(individual,Nc,Nt,Np)
+        nl = mydic["nl"]
+        
+        mysum = 0.0
+        for i in range(0, Nt):
+
+            for k in range(0, Nc):
+                this_sum = 0.0
+                neighbors = nl[k]
+                for n in neighbors:
+                    this_sum = this_sum + np.sum(v[n][i, :])
+
+                this_sum =  this_sum - 1
+                mysum = mysum +this_sum
+        if(mysum<=Nt*Nc):
+            return True
+        else:
+            return False
+    def decode_all_x(individual,no_of_variables,bounds):
+        '''
+        returns list of decoded x in same order as we have in binary format in chromosome
+        bounds should have upper and lower limit for each variable in same order as we have in binary format in chromosome 
+        '''
+        # print(individual)
+        len_chromosome = len(individual)
+        # print(len_chromosome)
+        # print(no_of_variables)
+        len_chromosome_one_var = int(len_chromosome/no_of_variables)
+        bound_index = 0
+        x = []
+        
+        # one loop each for x(first 50 bits of individual) and y(next 50 of individual)
+        for i in range(0,len_chromosome,len_chromosome_one_var):
+            # converts binary to decimial using 2**place_value
+            chromosome_string = ''.join((str(xi) for xi in  individual[i:i+len_chromosome_one_var]))
+            binary_to_decimal = int(chromosome_string,2)
+            
+            # this formula for decoding gives us two benefits
+            # we are able to implement lower and upper bounds for each variable
+            # gives us flexibility to choose chromosome of any length, 
+            #      more the no. of bits for a variable, more precise the decoded value can be
+            lb = bounds[bound_index][0]
+            ub = bounds[bound_index][1]
+            precision = (ub-lb)/((2**len_chromosome_one_var)-1)
+            decoded = (binary_to_decimal*precision)+lb
+            x.append(decoded)
+            bound_index +=1
+        
+        # returns a list of solutions in phenotype o, here [x,y]
+        return x
+    def fid_routine_constant_deap(individual):
+        individual = decode_all_x(individual,no_of_variables,bounds)
+        dim = mydic["dim"]
+        Nc = mydic["Nc"]
+        Np = mydic["Np"]
+        Nt = mydic["Nt"]
+        v = creat_matrix_from_vector(individual,Nc,Nt,Np)
+        
+        basis = mydic["basis"]
+        mydic["v"] = v
+        amp_list = mydic["amp"]
+        gate = mydic["gate"]
+        nl = mydic["nl"]
+        plank = mydic["p"]
+        T_max = mydic["T"]
+        dt = mydic["dt"]
+        v_list=v
+        plank = mydic["p"]
+        H_list = mydic["H"]
+        U = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list,H_list,dim)
+        obj = fid_leak_obj(U, gate, basis)
+        print("fid" + str(obj))
+        return [-obj]
+
+    def penalty_fxn(individual):
+        global mydic
+        Nc = mydic["Nc"]
+        Np = mydic["Np"]
+        Nt = mydic["Nt"]
+        individual = decode_all_x(individual,no_of_variables,bounds)
+        v = creat_matrix_from_vector(individual,Nc,Nt,Np)
+        nl = mydic["nl"]
+        '''
+        Penalty function to be implemented if individual is not feasible or violates constraint
+        It is assumed that if the output of this function is added to the objective function fitness values,
+        the individual has violated the constraint.
+        '''
+        mysum = 0.0
+        for i in range(0, Nt):
+
+            for k in range(0, Nc):
+                this_sum = 0.0
+                neighbors = nl[k]
+                for n in neighbors:
+                    this_sum = this_sum + np.sum(v[n][i, :])
+
+                this_sum =  this_sum - 1
+                mysum = mysum +this_sum
+        return mysum**2
+
+
+
+    def GA_helper_constant_deap(individual):
+        global mydic
+        individual =xdecode_all_x(individual,no_of_variables,bounds)
+        
+        Nc = mydic["Nc"]
+        Np = mydic["Np"]
+        Nt = mydic["Nt"]
+        v = creat_matrix_from_vector(individual,Nc,Nt,Np)
+        basis = mydic["basis"]
+        amp_list = mydic["amp"]
+        gate = mydic["gate"]
+        nl = mydic["nl"]
+        plank = mydic["p"]
+        v_list = creat_matrix_from_vector(v, Nc, Nt, Np)
+
+        #pen_term = generate_pen_term(v_list, 1000, Nc, Nt, Np, nl)
+       
+
+        print((fid,pen_term))
+        return fid
+
+    toolbox.register("evaluate", fid_routine_constant_deap) # privide the objective function here
+    toolbox.decorate("evaluate", tools.DeltaPenalty(check_feasiblity, 10, penalty_fxn)) # constraint on our objective function
+
+    # registering basic processes using bulit in functions in DEAP
+    toolbox.register("mate", tools.cxTwoPoint) # strategy for crossover, this classic two point crossover
+    toolbox.register("mutate", tools.mutFlipBit, indpb=probability_of_mutation) # mutation strategy with probability of mutation
+    toolbox.register("select", tools.selTournament, tournsize=tournSel_k)
+    # create poppulation as coded in population class
+    # no. of individuals can be given as input
+    print(multiprocessing.cpu_count())
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+    toolbox.register("map", pool.map)
+    stats = tools.Statistics()
+
+    # registering the functions to which we will pass the list of fitness's of a gneration's offspring
+    # to ge the results
+    stats.register('Min', np.min)
+    stats.register('Max', np.max)
+    stats.register('Avg', np.mean)
+    stats.register('Std', np.std)
+
+    logbook = tools.Logbook()
+    hall_of_fame = tools.HallOfFame(1)
+    pop = toolbox.population(n=population_size)
+
+    # The next thing to do is to evaluate our brand new population.
+
+    # use map() from python to give each individual to evaluate and create a list of the result
+    fitnesses = list(map(toolbox.evaluate, pop)) 
+
+    # ind has individual and fit has fitness score
+    # individual class in deap has fitness.values attribute which is used to store fitness value
+    for ind, fit in zip(pop, fitnesses):
+        ind.fitness.values = fit
+
+    # evolve our population until we reach the number of generations
+
+    # Variable keeping track of the number of generations
+    g = 0
+    # clearing hall_of_fame object as precaution before every run
+    hall_of_fame.clear()
+
+    # Begin the evolution
+    while g < no_of_generations:
+        # A new generation
+        g = g + 1
+        
+        #The evolution itself will be performed by selecting, mating, and mutating the individuals in our population.
+        
+        # the first step is to select the next generation.
+        # Select the next generation individuals using select defined in toolbox here tournament selection
+        # the fitness of populations is decided from the individual.fitness.values[0] attribute
+        #      which we assigned earlier to each individual
+        # these are best individuals selected from population after selection strategy
+        offspring = toolbox.select(pop, len(pop))
+        # Clone the selected individuals, this needs to be done to create copy and avoid problem of inplace operations
+        # This is of utter importance since the genetic operators in toolbox will modify the provided objects in-place.
+        offspring = list(map(toolbox.clone, offspring))
+        
+        # Next, we will perform both the crossover (mating) and the mutation of the produced children with 
+        #        a certain probability of CXPB and MUTPB. 
+        # The del statement will invalidate the fitness of the modified offspring as they are no more valid 
+        #       as after crossover and mutation, the individual changes
+        
+        # Apply crossover and mutation on the offspring
+        # note, that since we are not cloning, the changes in child1, child2 and mutant are happening inplace in offspring
+        for child1, child2 in zip(offspring[::2], offspring[1::2]):
+            if random.random() < CXPB:
+                    toolbox.mate(child1, child2)
+                    del child1.fitness.values
+                    del child2.fitness.values
+
+            for mutant in offspring:
+                if random.random() < MUTPB:
+                    toolbox.mutate(mutant)
+                    del mutant.fitness.values 
+                    
+                    
+        # Evaluate the individuals with an invalid fitness (after we use del to make them invalid)
+        # again note, that since we did not use clone, each change happening is happening inplace in offspring
+        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        fitnesses = map(toolbox.evaluate, invalid_ind)
+        for ind, fit in zip(invalid_ind, fitnesses):
+            ind.fitness.values = fit
+            
+        
+        # To check the performance of the evolution, we will calculate and print the 
+        # minimal, maximal, and mean values of the fitnesses of all individuals in our population 
+        # as well as their standard deviations.
+        # Gather all the fitnesses in one list and print the stats
+        #this_gen_fitness = [ind.fitness.values[0] for ind in offspring]
+        this_gen_fitness = [] # this list will have fitness value of all the offspring
+        for ind in offspring:
+            this_gen_fitness.append(ind.fitness.values[0])            
+        
+        
+        #### SHORT METHOD
+        
+        # will update the HallOfFame object with the best individual 
+        #   according to fitness value and weight (while creating base.Fitness class)
+        hall_of_fame.update(offspring)
+        
+        # pass a list of fitnesses 
+        # (basically an object on which we want to perform registered functions)
+        # will return a dictionary with key = name of registered function and value is return of the registered function
+        stats_of_this_gen = stats.compile(this_gen_fitness)
+        
+        # creating a key with generation number
+        stats_of_this_gen['Generation'] = g
+        
+        # printing for each generation
+        print(stats_of_this_gen)
+        
+        # recording everything in a logbook object
+        # logbook is essentially a list of dictionaries
+        logbook.append(stats_of_this_gen)
+        
+        
+        # now one generation is over and we have offspring from that generation
+        # these offspring wills serve as population for the next generation
+        # this is not happening inplace because this is simple python list and not a deap framework syntax
+        pop[:] = offspring
+    # print the best solution using HallOfFame object
+    best_obj = None
+    best_sol = None
+    
+    for best_indi in hall_of_fame:
+        # using values to return the value and
+        # not a deap.creator.FitnessMin object
+        best_obj_val_overall = best_indi.fitness.values[0]
+        best_obj = best_obj_val_overall
+
+        print('Minimum value for function: ',best_obj_val_overall)
+        print('Optimum Solution: ',decode_all_x(best_indi,no_of_variables,bounds))
+        val =decode_all_x(best_indi,no_of_variables,bounds)
+        v = creat_matrix_from_vector(val, Nc,Nt,Np)
+        best_sol = v
+        
+        
+    # finding the fitness value of the fittest individual of the last generation or 
+    # the solution at which the algorithm finally converges
+    # we find this from logbook
+
+    # select method will return value of all 'Min' keys in the order they were logged,
+    # the last element will be the required fitness value since the last generation was logged last
+    best_obj_val_convergence = logbook.select('Min')[-1]
+
+    # plotting Generations vs Min to see convergence for each generation
+
+    plt.figure(figsize=(20, 10))
+
+    # using select method in logbook object to extract the argument/key as list
+    plt.plot(logbook.select('Generation'), logbook.select('Min'))
+
+    plt.title("Minimum values of f(x,y) Reached Through Generations",fontsize=20,fontweight='bold')
+    plt.xlabel("Generations",fontsize=18,fontweight='bold')
+    plt.ylabel("Value of Himmelblau's Function",fontsize=18,fontweight='bold')
+    plt.xticks(fontweight='bold')
+    plt.yticks(fontweight='bold')
+
+
+    # the red line at lowest value of f(x,y) in the last generation or the solution at which algorithm converged
+    plt.axhline(y=best_obj_val_convergence,color='r',linestyle='--')
+
+    # the red line at lowest value of f(x,y)
+    plt.axhline(y=best_obj_val_overall,color='r',linestyle='--')
+
+
+    #
+    if best_obj_val_convergence > 2:
+        k = 0.8
+    elif best_obj_val_convergence > 1:
+        k = 0.5
+    elif best_obj_val_convergence > 0.5:
+        k = 0.3
+    elif best_obj_val_convergence > 0.3:
+        k = 0.2
+    else:
+        k = 0.1
+
+    # location of both text in terms of x and y coordinate
+    # k is used to create height distance on y axis between the two texts for better readability
+
+
+    # for best_obj_val_convergence
+    xyz1 = (no_of_generations/2.4,best_obj_val_convergence) 
+    xyzz1 = (no_of_generations/2.2,best_obj_val_convergence+(k*3)) 
+
+    plt.annotate("At Convergence: %0.5f" % best_obj_val_convergence,xy=xyz1,xytext=xyzz1,
+                arrowprops=dict(facecolor='black',shrink=1,width=1,headwidth=5),
+                fontsize=18,fontweight='bold')
+
+    # for best_obj_val_overall
+    xyz2 = (no_of_generations/6,best_obj_val_overall)
+    xyzz2 = (no_of_generations/5.4,best_obj_val_overall+(k/0.1))
+
+    plt.annotate("Minimum Overall: %0.5f" % best_obj_val_overall,xy=xyz2,xytext=xyzz2,
+                arrowprops=dict(facecolor='black',shrink=1,width=1,headwidth=5),
+                fontsize=18,fontweight='bold')
+
+    plt.show()
+    # a= best_sol
+    # a = ga_instance.best_solutions
+    # b = ga_instance.best_solutions_fitness
+    print(type(best_obj))
+    my_list = [(best_obj.real,best_sol)]
+    # for i in range(0, len(a)):
+    #     # print(b[i],a[i])
+    #     my_list.append((b[i], a[i]))
+
+    my_list.sort(key=lambda tup: tup[0])
+    best_obj = my_list[0][0]
+    counter = 0
+    best_sols = []
+    # still_collecting = True
+    # while (still_collecting):
+    #     if (best_obj == my_list[counter][0]):
+    #         best_sols.append(my_list[counter][1])
+    #     else:
+    #         still_collecting = False
+    #     counter += 1
+    #print(best_sols)
+    #print(best_sol[0].shape)
+    v_list = best_sol
+    
+    #print(v_list)
+    make_movie(v_list,Nc,Nt,Np,1)
+    pool.close()
+    return (best_obj, best_sol)
+
+
+
+
+def GA_penalty_constant():
+    global mydic
+    global temp
 
     Nc = mydic["Nc"]
     Np = mydic["Np"]
@@ -438,7 +935,7 @@ def GA_penalty():
                            num_parents_mating=2,
                            sol_per_pop=10,
                            num_genes=Nc * Np * Nt,
-                           fitness_func=GA_helper, gene_space=[0, 1], save_best_solutions=True)
+                           fitness_func=GA_helper_constant, gene_space=[0, 1], save_best_solutions=True)
     ga_instance.run()
     a = ga_instance.best_solutions
     b = ga_instance.best_solutions_fitness
@@ -458,47 +955,154 @@ def GA_penalty():
         else:
             still_collecting = False
         counter += 1
+    #print(best_sols)
     v_list = creat_matrix_from_vector(best_sols[0],Nc,Nt,Np)
+    temp=v_list
+    #print(v_list)
+    make_movie(v_list,Nc,Nt,Np,1)
     return (best_obj, best_sols)
 
-def make_movie_part(v,Nc,Nt,Np):
+
+def make_movie(v,Nc,Nt,Np,plot_time_each_step):
+    duration = Nt*plot_time_each_step
+
+
     global temp
     temp=v
     fig, ax = plt.subplots()
     def make_frame(t):
         global temp
+        global mydic 
+        amp_list=mydic["amp"]
+        Nc=mydic["Nc"]
+        Np=mydic["Np"]
         #plt.imshow(matrix, cmap = cm.Greys_r)
         #print(t)
         my_t = int(t)
+        v_list=temp
         matrix = np.zeros((1, Nc))
         ax = plt.gca()
         ax.clear()
-        current_level = seq_list[my_t-1]
+        current_level = []
+        for i in range(0,len(v_list)):
+            cur_ent = v_list[i][my_t,:]
+            current_level.append(cur_ent)
+        # print(len(current_level))
+        # print(matrix.shape)
+        # print(current_level)
+        # print(Nc)
         for k in range(0,len(current_level)):
-            for i in range(0,len(current_level[k])):
-                    
-                    val = current_level[k][i]
-                    node_loc_nm = None
-                    for j in range(1,m*n+1):
-                        if(X[my_t,k+1,val,j].value==1):
-                            node_loc_nm=j
-                           
-                            break
-                    i_j_loc = dic_mn[(node_loc_nm,)]
-                    #print(i_j_loc )
-                    matrix[i_j_loc[0]-1, i_j_loc[1]-1] = 100.0
-                    ax.text(i_j_loc[1]-1, i_j_loc[0]-1, "n_" + str(val), va='center', ha='center',color="k", weight='bold')
+            
+                       #print(matrix)
+            indx = np.argmax(current_level[k])
+            matrix[0, k ] = 100*current_level[k][indx]
+            #print(str(current_level[k][indx]*amp_list[indx]))
+            ax.text(k,0, str(current_level[k][indx]*amp_list[indx]), va='center', ha='center',color="k", weight='bold')
+    
         #print(matrix)
-        plt.imshow(matrix, cmap = cm.spring,aspect='auto')
+        cmap = colors.ListedColormap(['white', 'red'])
+        bounds=[0,90,110]
+        norm = colors.BoundaryNorm(bounds, cmap.N)
+
+        plt.imshow(matrix, cmap = cmap,norm=norm)
+            
         return mplfig_to_npimage(fig)
-def make_movie(v,Nc,Nt,Np,plot_time_each_step):
-    duration = Nt*plot_time_each_step
+
     animation = VideoClip(make_frame, duration = duration)
     
     # displaying animation with auto play and looping
     animation.ipython_display(fps = plot_time_each_step, loop = True, autoplay = True)
 
-def GA_routine(number_e, gate, T, dt, amp_list, plank):
+def GA_routine_constant(number_e, gate, T, dt, amp_list, plank):
+    global accum_list
+    global mydic
+    mydic = {}
+    Nt = int(T / dt)
+    Np = len(amp_list)
+    Nc = number_e - 1
+    pen_fun = lambda k: ten_pen(k)
+    sigma_x, sigma_y, sigma_z = generate_sigmas_xyz()
+    real_list = []
+    imag_list = []
+    time_list = []
+    H_list=[]
+    for i in range(0, Nt):
+        time_list.append((i * dt, (i + 1) * dt))
+    for i in range(1, number_e):
+        s_iip1 = s_one(i, i + 1, sigma_x, sigma_y, sigma_z, 1,number_e)
+        H_list.append(s_iip1)
+    mydic["tl"] = time_list
+    neighbor_list = []
+    for i in range(1, number_e + 1):
+        temp = []
+        lef = i - 1
+        cen = i
+        right = i + 1
+        if (1 >= lef and lef <= number_e):
+            temp.append(lef)
+        if (1 >= cen and cen <= number_e):
+            temp.append(cen)
+        if (1 >= right and right <= number_e):
+            temp.append(right)
+
+        neighbor_list.append(temp)
+
+    mydic["nl"] = neighbor_list
+
+    x = fong_gen_single()
+    
+    arr = [None] * number_e
+    generateAllBinaryStrings(int(number_e/3), arr, 0)
+    accum_list = arr
+    gamma = 1
+    sigma = 0
+    e0, e1 = dfs_0_1(gamma, sigma, x)
+    basis_list = ket_gen_dfs(e0, e1, int(number_e/3), accum_list)
+    print(basis_list[0])
+    print(basis_list[1])
+    mydic["basis"] = basis_list
+    mydic["amp"] = amp_list
+    mydic["gate"] = gate
+    mydic["rl"] = real_list
+    mydic["il"] = imag_list
+    mydic["Nc"] = Nc
+    mydic["Np"] = Np
+    mydic["Nt"] = Nt
+    mydic["T"] = T
+    mydic["dt"] = dt
+    mydic["p"] = plank
+    mydic["dim"] = 2 ** number_e
+    mydic["H"] = H_list
+
+    # e0 = [1, 0]
+    # e1 = [0,1]
+
+    # H = math.pi*H_list[0]
+    # matprint(H)
+    # sol = scipy.linalg.expm(-1j*H)
+    # e100 = kron(e1,kron(e0,e0))
+    # e010 = kron(e0,kron(e1,e0))
+    # print(e100)
+    # print(e010)
+    # matprint(sol)
+    # print(matprint(sol.conjugate()@sol))
+    # print("-")
+    # print(e100.shape)
+  
+    # res1 = sol@e100
+    # res2 = sol@e010
+    # print("---------------")
+    # print(res1)
+    # print(res2)
+    # print("---------------")
+
+
+    
+
+    #return GA_penalty_constant()
+    return GA_penalty_constant_deap()
+
+def GA_routine_time(number_e, gate, T, dt, amp_list, plank):
     global accum_list
     global mydic
     mydic = {}
@@ -513,7 +1117,7 @@ def GA_routine(number_e, gate, T, dt, amp_list, plank):
     for i in range(0, Nt):
         time_list.append((i * dt, (i + 1) * dt))
     for i in range(1, number_e):
-        s_iip1 = s_one(i, i + 1, sigma_x, sigma_y, sigma_z, number_e)
+        s_iip1 = s_one(i, i + 1, sigma_x, sigma_y, sigma_z, 1,number_e)
         real_list.append(s_iip1.real)
         imag_list.append(s_iip1.imag)
     mydic["tl"] = time_list
@@ -568,7 +1172,10 @@ number_e = 3
 gate_list = generate_gate_lists_one()
 plank = 1.0
 gate = gate_list[0]
-GA_routine(number_e, gate, T, dt, amp_list, plank)
+if __name__ == '__main__':
+    
+      
+    print(GA_routine_constant(number_e, gate, T, dt, amp_list, plank))
 # arr = [None] * 2
 # generateAllBinaryStrings(2, arr, 0)
 # print(accum_list)
