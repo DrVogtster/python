@@ -24,6 +24,22 @@ accum_list = []
 mydic = {}
 temp = None
 
+diconedtothreed={}
+dicthreedtooned={}
+
+def build_dics(Nc,Nt,Np):
+    global diconedtothreed
+    global dicthreedtooned
+    diconedtothreed={}
+    dicthreedtooned={}
+    counter=0
+    for i in range(0,Nc):
+        for j in range(0,Nt):
+            for k in range(0,Np):
+                diconedtothreed[(counter,)] = (i,j,k)
+                dicthreedtooned[(i,j,k)] = counter
+
+
 def scaled_trun_func(input, a, b, mean, std, scale):
     myclip_a = a
     myclip_b = b
@@ -505,7 +521,7 @@ def GA_penalty_constant_deap():
     no_of_generations = 1000 # decide, iterations
 
     # decide, population size or no of individuals or solutions being considered in each generation
-    population_size = 100000
+    population_size = 1000
 
     # chromosome (also called individual) in DEAP
     # length of the individual or chrosome should be divisible by no. of variables 
@@ -691,7 +707,7 @@ def GA_penalty_constant_deap():
         return fid
 
     toolbox.register("evaluate", fid_routine_constant_deap) # privide the objective function here
-    toolbox.decorate("evaluate", tools.DeltaPenalty(check_feasiblity, 10, penalty_fxn)) # constraint on our objective function
+    #toolbox.decorate("evaluate", tools.DeltaPenalty(check_feasiblity, 10, penalty_fxn)) # constraint on our objective function
 
     # registering basic processes using bulit in functions in DEAP
     toolbox.register("mate", tools.cxTwoPoint) # strategy for crossover, this classic two point crossover
@@ -1174,7 +1190,7 @@ plank = 1.0
 gate = gate_list[0]
 if __name__ == '__main__':
     
-      
+    build_dics(number_e-1,int(T/dt),len(amp_list))
     print(GA_routine_constant(number_e, gate, T, dt, amp_list, plank))
 # arr = [None] * 2
 # generateAllBinaryStrings(2, arr, 0)
