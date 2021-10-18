@@ -521,7 +521,7 @@ def GA_penalty_constant_deap():
     no_of_generations = 1000 # decide, iterations
 
     # decide, population size or no of individuals or solutions being considered in each generation
-    population_size = 1000
+    population_size = 10000
 
     # chromosome (also called individual) in DEAP
     # length of the individual or chrosome should be divisible by no. of variables 
@@ -595,7 +595,7 @@ def GA_penalty_constant_deap():
                 for n in neighbors:
                     this_sum = this_sum + np.sum(v[n][i, :])
 
-                this_sum =  this_sum - 1
+                # this_sum =  this_sum - 1
                 mysum = mysum +this_sum
         if(mysum<=Nt*Nc):
             return True
@@ -707,7 +707,7 @@ def GA_penalty_constant_deap():
         return fid
 
     toolbox.register("evaluate", fid_routine_constant_deap) # privide the objective function here
-    #toolbox.decorate("evaluate", tools.DeltaPenalty(check_feasiblity, 10, penalty_fxn)) # constraint on our objective function
+    toolbox.decorate("evaluate", tools.DeltaPenalty(check_feasiblity, 1, penalty_fxn)) # constraint on our objective function
 
     # registering basic processes using bulit in functions in DEAP
     toolbox.register("mate", tools.cxTwoPoint) # strategy for crossover, this classic two point crossover

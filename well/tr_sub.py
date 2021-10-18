@@ -88,22 +88,10 @@ class subproblem:
             my_prob.solve()
             #print("DONE SOLVING A TRUST REGION SUBPROBLEM")
             x = my_prob.solution.get_values()
-            my_prob.solution.write("myanswer")
-            #print(x)
-            #print(self.cs)
-            mysum=0.0
-            for k in range(0,number_squares):
-                sub_slice = x[number_squares+ k*nummats:number_squares +  k*nummats+nummats]
-
-                for j in range(0,len(sub_slice)):
-                    mysum = mysum+sub_slice[j]*density_list[j]*dx**2
-            print("MASS")
-            print(mysum)
-            #print(self.cs)
-            #print(coiff_den)
+          
 
 
-            return (x[number_squares:number_squares+ number_squares*len(density_list)],my_prob.solution.get_status_string())
+            return x
         except CplexError as exc:
             print(exc)
             # mysum=0.0
