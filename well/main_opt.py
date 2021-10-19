@@ -19,6 +19,7 @@ import random, numpy as np
 import matplotlib.pyplot as plt
 from moviepy.editor import VideoClip
 from moviepy.video.io.bindings import mplfig_to_npimage
+from first_order_trust_region_code import *
 
 accum_list = []
 mydic = {}
@@ -38,6 +39,7 @@ def build_dics(Nc,Nt,Np):
             for k in range(0,Np):
                 diconedtothreed[(counter,)] = (i,j,k)
                 dicthreedtooned[(i,j,k)] = counter
+                counter+=1
 
 
 def scaled_trun_func(input, a, b, mean, std, scale):
@@ -358,7 +360,7 @@ def fid_leak_obj(U, V, basis_list):
     leak = 0
     # for k in range(0,len(bad_states)):
     #     leak = leak + np.abs(np.transpose(bad_states[k][0]*U*bad_states[k][1]))**2
-    return fid + leak
+    return fid.real + leak.real
     # pederson
 
 
@@ -367,9 +369,11 @@ def fid_leak_obj(U, V, basis_list):
 
 # Function to print the output
 def printTheArray(arr, n):
+    global accum_list
     tem = []
     for i in range(0, n):
         print(arr[i], end=" ")
+        print("lol")
         tem.append(arr[i])
     accum_list.append(tem)
 
@@ -381,7 +385,7 @@ def generateAllBinaryStrings(n, arr, i):
     global accum_list
     if i == n:
         printTheArray(arr, n)
-
+    
         return
 
     # First assign "0" at ith position
@@ -655,7 +659,7 @@ def GA_penalty_constant_deap():
         U = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list,H_list,dim)
         obj = fid_leak_obj(U, gate, basis)
         print("fid" + str(obj))
-        return [-obj]
+        return [obj]
 
     def penalty_fxn(individual):
         global mydic
@@ -992,6 +996,7 @@ def make_movie(v,Nc,Nt,Np,plot_time_each_step):
         amp_list=mydic["amp"]
         Nc=mydic["Nc"]
         Np=mydic["Np"]
+        dt = mydic["dt"]
         #plt.imshow(matrix, cmap = cm.Greys_r)
         #print(t)
         my_t = int(t)
@@ -1021,6 +1026,7 @@ def make_movie(v,Nc,Nt,Np,plot_time_each_step):
         norm = colors.BoundaryNorm(bounds, cmap.N)
 
         plt.imshow(matrix, cmap = cmap,norm=norm)
+        plt.title("Control at T=" +str(my_t*dt))
             
         return mplfig_to_npimage(fig)
 
@@ -1181,17 +1187,173 @@ def GA_routine_time(number_e, gate, T, dt, amp_list, plank):
     GA_penalty()
 
 
-T = 500
-dt = 10
-amp_list = [math.pi / 2.0, math.pi, (3.0 / 4.0) * math.pi]
-number_e = 3
+def trust_region(number_e, gate, T, dt, amp_list, plank):
+    global accum_list
+    global mydic
+    global diconedtothreed
+    global dicthreedtooned
+    print(dicthreedtooned)
+    mydic = {}
+    Nt = int(T / dt)
+    Np = len(amp_list)
+    Nc = number_e - 1
+    pen_fun = lambda k: ten_pen(k)
+    sigma_x, sigma_y, sigma_z = generate_sigmas_xyz()
+    real_list = []
+    imag_list = []
+    time_list = []
+    H_list=[]
+    for i in range(0, Nt):
+        time_list.append((i * dt, (i + 1) * dt))
+    for i in range(1, number_e):
+        s_iip1 = s_one(i, i + 1, sigma_x, sigma_y, sigma_z, 1,number_e)
+        H_list.append(s_iip1)
+    mydic["tl"] = time_list
+    neighbor_list = []
+    for i in range(0, Nc):
+        temp = []
+        lef = i - 1
+        cen = i
+        right = i + 1
+        if (lef>=0 and lef <= Nc-1):
+            temp.append(lef)
+        if (cen>=0  and cen <=  Nc-1):
+            temp.append(cen)
+        if (right>=0   and right <=  Nc-1):
+            temp.append(right)
+
+        neighbor_list.append(temp)
+
+    mydic["nl"] = neighbor_list
+
+    x = fong_gen_single()
+    
+    arr = [None] * number_e
+    generateAllBinaryStrings(int(number_e/3), arr, 0)
+    
+    gamma = 1
+    sigma = 0
+    e0, e1 = dfs_0_1(gamma, sigma, x)
+    basis_list = ket_gen_dfs(e0, e1, int(number_e/3), accum_list)
+    print(basis_list[0])
+    print(basis_list[1])
+    mydic["basis"] = basis_list
+    mydic["amp"] = amp_list
+    mydic["gate"] = gate
+    mydic["rl"] = real_list
+    mydic["il"] = imag_list
+    mydic["Nc"] = Nc
+    mydic["Np"] = Np
+    mydic["Nt"] = Nt
+    mydic["T"] = T
+    mydic["dt"] = dt
+    mydic["p"] = plank
+    mydic["dim"] = 2 ** number_e
+    mydic["H"] = H_list
+
+    # e0 = [1, 0]
+    # e1 = [0,1]
+
+    # H = math.pi*H_list[0]
+    # matprint(H)
+    # sol = scipy.linalg.expm(-1j*H)
+    # e100 = kron(e1,kron(e0,e0))
+    # e010 = kron(e0,kron(e1,e0))
+    # print(e100)
+    # print(e010)
+    # matprint(sol)
+    # print(matprint(sol.conjugate()@sol))
+    # print("-")
+    # print(e100.shape)
+  
+    # res1 = sol@e100
+    # res2 = sol@e010
+    # print("---------------")
+    # print(res1)
+    # print(res2)
+    # print("---------------")
+
+    # tr = trust_region_problem(np.random.randint(2, size=Nc*Nt*Np).tolist(),.75,Nc*Nt*Np,fid_grad_routine_tr)
+    ig = []
+    for k in range(0,Nt*Np*Nc):
+        ig.append(0.0)
+    ig[0]=1.0
+    tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
+    
+    (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
+    print((obj_cur,v_cur,grad_norm))
+    v_mat=creat_matrix_from_vector(v_cur,Nc,Nt,Np)
+    make_movie(v_mat,Nc,Nt,Np,1)
+
+    #return GA_penalty_constant()
+    #return GA_penalty_constant_deap()
+    print(dicthreedtooned)
+    print(neighbor_list)
+
+
+def fid_grad_routine_tr(v):
+    dim = mydic["dim"]
+    Nc = mydic["Nc"]
+    Np = mydic["Np"]
+    Nt = mydic["Nt"]
+    basis = mydic["basis"]
+    mydic["v"] = v
+    amp_list = mydic["amp"]
+    gate = mydic["gate"]
+    nl = mydic["nl"]
+    plank = mydic["p"]
+    T_max = mydic["T"]
+    dt = mydic["dt"]
+    v_list=creat_matrix_from_vector(v,Nc,Nt,Np)
+    H_list = mydic["H"]
+    print(len(v_list))
+    U = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list,H_list,dim)
+    obj = fid_leak_obj(U, gate, basis)
+    grad_list=[]
+    dx = .001
+    for i in range(0,len(v)):
+        v_tempp = v[:]
+        v_tempm = v[:]
+        
+        v_tempm[i] = v_tempm[i] - dx
+        v_tempp[i] = v_tempp[i] + dx
+        #print(v_tempm[i],v[i],v_tempp[i])
+        v_list_m = creat_matrix_from_vector(v_tempm,Nc,Nt,Np)
+        Um = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list_m,H_list,dim)
+        v_list_p = creat_matrix_from_vector(v_tempp,Nc,Nt,Np)
+        Up = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list_p,H_list,dim)
+        obj1 = fid_leak_obj(Um, gate, basis)
+        obj2 = fid_leak_obj(Up, gate, basis)
+        grad_i = (obj2-obj1)/(2.0*dx)
+        grad_list.append(-grad_i)
+
+    return -obj.real,grad_list
+
+T = 50
+dt = 1
+p1 = math.acos(-1.0/math.sqrt(3))/math.pi
+p2 = math.asin(1.0/math.sqrt(3))/math.pi
+q1 = math.acos(1.0/math.sqrt(3))/math.pi
+q2 = math.asin(1.0/math.sqrt(3))/math.pi
+amp_list = [p1,p2,.5,-.5,1,p1,p2,-p1,1-p2]
+amp_list2 = [-q1,q1-1,2.0/3.0,1-q1,-2.0/3.0,q2-1,1,.5,-.5]
+
+for i in range(0,len(amp_list)):
+    amp_list[i] = amp_list[i]*math.pi
+    amp_list2[i] = amp_list2[i]*math.pi
+
+
+number_e = 6
 gate_list = generate_gate_lists_one()
 plank = 1.0
 gate = gate_list[0]
+C=C_gate()
 if __name__ == '__main__':
     
     build_dics(number_e-1,int(T/dt),len(amp_list))
-    print(GA_routine_constant(number_e, gate, T, dt, amp_list, plank))
+    #print(GA_routine_constant(number_e, gate, T, dt, amp_list, plank))
+    #trust_region(number_e, gate, T, dt, amp_list, plank)
+    trust_region(number_e, C, T, dt, amp_list, plank)
 # arr = [None] * 2
 # generateAllBinaryStrings(2, arr, 0)
 # print(accum_list)

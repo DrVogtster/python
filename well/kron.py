@@ -74,7 +74,7 @@ def ket_gen_dfs(e0,e1,nq,com_list):
     
 
     out_list=[] 
-    
+    print(com_list)
     for p in com_list:
         order = p
         temp =np.kron(ret_vec(order[-2],e0,e1),ret_vec(order[-1],e0,e1))

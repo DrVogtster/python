@@ -4,16 +4,32 @@ import numpy as np
 import math
 
 class knapsack:
-  def __init__(self,cur_v,mygrad,Nc,Nt,Np,amp_list,neighborlist,diconedtothreed,dicthreedtooned,tr_radius):
-        self.cur_v=cur_v
-        self.args=args
-        self.Nc=Nc
-        self.Nt = Nt
-        self.amp_list=amp_list
+    def __init__(self,cur_v,mygrad,Nc,Nt,Np,amp_list,neighborlist,diconedtothreed,dicthreedtooned,tr_radius,mydic):
+
+            self.cur_v=cur_v
+            #self.args=args
+            self.Nc=Nc
+            self.Nt = Nt
+            self.Np=Np
+            self.amp_list=amp_list
+            self.mygrad=mygrad
+            self.tr_radius = tr_radius
+            self.neighbor_list = neighborlist
+            self.mydic= dicthreedtooned
     def solve_problem(self):
         num_vars = self.Nc*self.Nt*self.Np
         cur_v = self.cur_v
-
+        my_obj = self.mygrad
+        tr_radius  =self.tr_radius
+        mydic = self.mydic
+        Nt = self.Nt
+        Nc = self.Nc
+        Np = self.Np
+        neighbor_list = self.neighbor_list
+        if(len(neighbor_list)==2):
+            temp =[]
+            temp.append(neighbor_list[0])
+            neighbor_list=temp
         try:
             my_prob = cplex.Cplex()
             prob =my_prob
@@ -22,13 +38,13 @@ class knapsack:
             #prob.set_warning_stream(None)
             #prob.set_results_stream(None)
             
-    
 
-            my_obj = mygrad
-            my_ctypeB = "B"
-           
+
             
-            my_ctype = my_ctypeB*len(v) 
+            my_ctypeB = "B"
+            
+            #print(my_obj)
+            my_ctype = my_ctypeB*len(cur_v) 
             variable_list=[]
             numlist=[]
             for k in range(0,len(my_ctype)):
@@ -36,7 +52,7 @@ class knapsack:
                 numlist.append(k)
 
             
-            val2=self.cs
+         
 
             #print(val)
             #print(len(self.g))
@@ -51,10 +67,14 @@ class knapsack:
                     coeff[k]=-1
             
             rhs = [tr_radius - cur_v.count(1)]
+            print((tr_radius,cur_v.count(1),rhs))
+            # print(rhs)
+            # print(cur_v)
 
             my_sense="L"
             my_rownames = ["r1"]
             rows  =[[variable_list,coeff]]
+            prob.variables.add(obj=my_obj, types=my_ctype,names=variable_list)
             prob.linear_constraints.add(lin_expr=rows, senses=my_sense,rhs=rhs)
             
             
@@ -67,21 +87,39 @@ class knapsack:
             #print(my_obj)
             #print(my_ctype)
             #print(variable_list)
-            prob.variables.add(obj=my_obj, types=my_ctype,names=variable_list)
-           
+            
+            
 
-
-            for i in range(0, Nt):
-                cur_var_list=[]
-                cur_num_var=[]
-                for j in range(0,Nc):
-                    neighbors = neighbor_list[j]
-                    for n in neighbors:
+            print(neighbor_list)
+            if(len(neighbor_list)!=1):
+                for i in range(0, Nt):
+                    
+                    for j in range(0,Nc):
+                        cur_var_list=[]
+                        cur_num_var=[]
+                        neighbors = neighbor_list[j]
+                        for n in neighbors:
+                            for k in range(0,Np):
+                                cur_var_list.append(variable_list[mydic[(n,i,k)]])
+                                cur_num_var.append(numlist[mydic[(n,i,k)]])
+                        print(Nc,j,cur_num_var)
+                        prob.SOS.add(type="1", SOS=[cur_var_list, cur_num_var])
+            else:
+                for i in range(0, Nt):
+                    cur_var_list=[]
+                    cur_num_var=[]
+                    for j in range(0,Nc):
+                        
                         for k in range(0,Np):
-                            cur_var_list.append(variable_list[mydic[(i,n,k)]])
-                            cur_num_var.append(numlist[mydic[(i,n,k)]])
+                            # print(mydic)
+                            # print(mydic[(i,n,k)])
+                            cur_var_list.append(variable_list[mydic[(j,i,k)]])
+                            cur_num_var.append(numlist[mydic[(j,i,k)]])
+                        # print(j,cur_num_var)
                     prob.SOS.add(type="1", SOS=[cur_var_list, cur_num_var])
-
+                    print(cur_var_list)
+                # print(cur_v)
+                # print(my_obj)
                 
 
 
@@ -89,7 +127,7 @@ class knapsack:
             my_prob.solve()
             #print("DONE SOLVING A TRUST REGION SUBPROBLEM")
             x = my_prob.solution.get_values()
-          
+            
 
 
             return x
@@ -104,7 +142,7 @@ class knapsack:
             # print(mysum)
             # print(self.cs)
             return None
-        
+    
 
 class trust_region_problem:
     def __init__(self,v0,rho0,tr_radius0,obj_grad_func):
@@ -113,34 +151,47 @@ class trust_region_problem:
         self.tr_radius=tr_radius0
         self.obj_grad_func = obj_grad_func
 
-    def execute_tr(self):
+    def execute_tr(self,mydic,diconedtothreed,dicthreedtooned):
+        dim = mydic["dim"]
+        Nc = mydic["Nc"]
+        Np = mydic["Np"]
+        Nt = mydic["Nt"]
+        basis = mydic["basis"]
+        #mydic["v"] = v
+        amp_list = mydic["amp"]
+        gate = mydic["gate"]
+        nl = mydic["nl"]
+        plank = mydic["p"]
+        T_max = mydic["T"]
+        dt = mydic["dt"]
         v_cur = self.v
         rho = self.rho
         tr_radius = self.tr_radius
         obj_grad_func=self.obj_grad_func
         counter=0
-        
+        print(len(v_cur))
         obj_cur,grad_cur = obj_grad_func(v_cur)
         while(tr_radius>=1):
             
-            knap_problem = knapsack(len(v_cur),grad_cur,v_cur)
+            knap_problem = knapsack(v_cur,grad_cur,Nc,Nt,Np,amp_list,nl,diconedtothreed,dicthreedtooned,tr_radius,mydic)
             new_v = knap_problem.solve_problem()
            
             obj_new,grad_new = obj_grad_func(new_v)
             diff =len(v_cur)*[0]
             my_sum=0.0
-          
+            ab_diff=len(v_cur)*[0]
             for k in range(0,len(v_cur)):
                 diff[k] = new_v[k]- v_cur[k]
                 my_sum=my_sum+ diff[k]*grad_cur[k]
+                ab_diff[k] = math.fabs(diff[k])
                 #print(grad_cur)
-            if(my_sum==0):
-                print("Stationary point (local) found in " +str(counter) + " iterations")
-                break
+            # if(my_sum==0):
+            #     print("Stationary point (local) found in " +str(counter) + " iterations")
+            #     break
             rho_k = (obj_cur - obj_new)/(-my_sum)
             if(rho_k>rho):
                 v_cur = new_v
-                if(math.fabs(sum(diff))==tr_radius):
+                if(sum(ab_diff)==tr_radius):
                     tr_radius=tr_radius*2
                 obj_cur = obj_new
                 grad_cur = grad_new
@@ -153,6 +204,7 @@ class trust_region_problem:
                 tr_radius = int(math.floor(tr_radius/2))
             counter+=1
             print("-----------------")
+            print("Iteration: " +str(counter))
             print("Current Objective: " +str(obj_cur))
             print("New Objective: " +str(obj_new))
             print("Current Radius" +str(tr_radius))
