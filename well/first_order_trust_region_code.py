@@ -33,10 +33,10 @@ class knapsack:
         try:
             my_prob = cplex.Cplex()
             prob =my_prob
-            #prob.set_log_stream(None)
-            #prob.set_error_stream(None)
-            #prob.set_warning_stream(None)
-            #prob.set_results_stream(None)
+            prob.set_log_stream(None)
+            prob.set_error_stream(None)
+            prob.set_warning_stream(None)
+            prob.set_results_stream(None)
             
 
 
@@ -90,7 +90,7 @@ class knapsack:
             
             
 
-            print(neighbor_list)
+            #print(neighbor_list)
             if(len(neighbor_list)!=1):
                 for i in range(0, Nt):
                     
@@ -102,7 +102,7 @@ class knapsack:
                             for k in range(0,Np):
                                 cur_var_list.append(variable_list[mydic[(n,i,k)]])
                                 cur_num_var.append(numlist[mydic[(n,i,k)]])
-                        print(Nc,j,cur_num_var)
+                        #print(Nc,j,cur_num_var)
                         prob.SOS.add(type="1", SOS=[cur_var_list, cur_num_var])
             else:
                 for i in range(0, Nt):
@@ -117,7 +117,7 @@ class knapsack:
                             cur_num_var.append(numlist[mydic[(j,i,k)]])
                         # print(j,cur_num_var)
                     prob.SOS.add(type="1", SOS=[cur_var_list, cur_num_var])
-                    print(cur_var_list)
+                    #print(cur_var_list)
                 # print(cur_v)
                 # print(my_obj)
                 
@@ -180,6 +180,14 @@ class trust_region_problem:
             diff =len(v_cur)*[0]
             my_sum=0.0
             ab_diff=len(v_cur)*[0]
+            counter+=1
+            print("-----------------")
+            print("Iteration: " +str(counter))
+            print("Current Objective: " +str(obj_cur))
+            print("New Objective: " +str(obj_new))
+            print("Current Radius" +str(tr_radius))
+
+            print("-----------------")
             for k in range(0,len(v_cur)):
                 diff[k] = new_v[k]- v_cur[k]
                 my_sum=my_sum+ diff[k]*grad_cur[k]
@@ -202,14 +210,7 @@ class trust_region_problem:
 
             else:
                 tr_radius = int(math.floor(tr_radius/2))
-            counter+=1
-            print("-----------------")
-            print("Iteration: " +str(counter))
-            print("Current Objective: " +str(obj_cur))
-            print("New Objective: " +str(obj_new))
-            print("Current Radius" +str(tr_radius))
-
-            print("-----------------")
+            
         print("Trust-region terminated successfully")
         return(obj_cur,v_cur,np.linalg.norm(grad_cur,2))
 

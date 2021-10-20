@@ -329,7 +329,7 @@ def produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list,H_list,dim):
         for i in range(0,Nc):
             for p in range(0,Np):
             
-                H_temp = H_temp + v_list[i][k,p]*H_list[i]*((amp_list[p])/dt)
+                H_temp = H_temp + v_list[i][k,p]*H_list[i]*((amp_list[p]/dt))
         cur_sol = scipy.linalg.expm(-1j*dt*(H_temp)/plank)
         sol =  np.matmul(cur_sol,sol)
     return sol
@@ -351,12 +351,17 @@ def fid_leak_obj(U, V, basis_list):
             #U_hat[i,j] = (basis_list[i].T.dot(U)*basis_list[j].T).sum(axis=1)
             if (V[i, j] == 0.0):
                 bad_states.append((basis_list[i], basis_list[j]))
-    M = (V.conjugate()) * U_hat
+
+    M = (V.conj().T) @ U_hat
+    
     TrM = np.trace(M)
-    TrMr = TrM.real
-    TrMi = TrM.imag
-    mod_squared = TrMr ** 2 + TrMi ** 2
-    fid = (1.0) / (size * (size + 1)) * (np.trace(M * M.conjugate()) + mod_squared)
+    # print(TrM)
+    # TrMr = TrM.real
+    # TrMi = TrM.imag
+    #mod_squared = TrMr ** 2 + TrMi ** 2
+    # print(size)
+    fid = ((1.0) / (size * (size + 1))) * (np.trace(M @ M.conj().T) + np.abs(TrM)**2)
+    # print(fid)
     leak = 0
     # for k in range(0,len(bad_states)):
     #     leak = leak + np.abs(np.transpose(bad_states[k][0]*U*bad_states[k][1]))**2
@@ -1250,7 +1255,8 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     mydic["p"] = plank
     mydic["dim"] = 2 ** number_e
     mydic["H"] = H_list
-
+    #print(basis_list)
+    #print(fid_leak_obj(gate, gate, basis_list))
     # e0 = [1, 0]
     # e1 = [0,1]
 
@@ -1274,21 +1280,59 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     # print("---------------")
 
     # tr = trust_region_problem(np.random.randint(2, size=Nc*Nt*Np).tolist(),.75,Nc*Nt*Np,fid_grad_routine_tr)
-    ig = []
-    for k in range(0,Nt*Np*Nc):
-        ig.append(0.0)
-    ig[0]=1.0
-    tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
-    
-    (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
-    print((obj_cur,v_cur,grad_norm))
-    v_mat=creat_matrix_from_vector(v_cur,Nc,Nt,Np)
-    make_movie(v_mat,Nc,Nt,Np,1)
+    samples=100
+    sol_list=[]
+    best_sol_obj=None
+    best_sol_v=None
+    for i in range(0,samples):
+        ig = []
+        for k in range(0,Nt*Np*Nc):
+            ig.append(0.0)
+        
+        if(Nc>2):
+            v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
 
+            for i in range(0,Nc,2):
+                for k in range(0,Nt):
+                    v_list[i][k,random.randint(0, len(amp_list)-1)] = 1
+            
+            out = v_list[0].flatten()
+            for i in range(1,len(v_list)):
+                out =np.concatenate((out, v_list[i].flatten()), axis=None)
+            ig = out.tolist()
+        else:
+            v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+
+        
+            for k in range(0,Nt):
+                if(k&2==0):
+                    v_list[0][k,random.randint(0, len(amp_list)-1)] = 1
+                else:
+                    v_list[1][k,random.randint(0, len(amp_list)-1)] = 1
+            
+            out = v_list[0].flatten()
+            for i in range(1,len(v_list)):
+                out =np.concatenate((out, v_list[i].flatten()), axis=None)
+            ig = out.tolist()
+
+
+        tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
+
+        (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
+        sol_list.append((obj_cur,v_cur))
+        sol_list.sort(key=lambda x:x[0])
+        best_sol_obj = sol_list[0][0]
+        best_sol_v = sol_list[0][1]
+
+        
+    
+    
+    #print((obj_cur,v_cur,grad_norm))
+    v_mat=creat_matrix_from_vector(best_sol_v,Nc,Nt,Np)
+    make_movie(v_mat,Nc,Nt,Np,1)
+    print("best objective" + str(best_sol_obj))
     #return GA_penalty_constant()
     #return GA_penalty_constant_deap()
-    print(dicthreedtooned)
-    print(neighbor_list)
 
 
 def fid_grad_routine_tr(v):
@@ -1327,10 +1371,13 @@ def fid_grad_routine_tr(v):
         grad_i = (obj2-obj1)/(2.0*dx)
         grad_list.append(-grad_i)
 
-    return -obj.real,grad_list
 
-T = 50
-dt = 1
+
+
+    return 1-obj.real,grad_list
+
+T = 250
+dt = 5
 p1 = math.acos(-1.0/math.sqrt(3))/math.pi
 p2 = math.asin(1.0/math.sqrt(3))/math.pi
 q1 = math.acos(1.0/math.sqrt(3))/math.pi
@@ -1343,7 +1390,7 @@ for i in range(0,len(amp_list)):
     amp_list2[i] = amp_list2[i]*math.pi
 
 
-number_e = 6
+number_e = 3
 gate_list = generate_gate_lists_one()
 plank = 1.0
 gate = gate_list[0]
@@ -1352,8 +1399,8 @@ if __name__ == '__main__':
     
     build_dics(number_e-1,int(T/dt),len(amp_list))
     #print(GA_routine_constant(number_e, gate, T, dt, amp_list, plank))
-    #trust_region(number_e, gate, T, dt, amp_list, plank)
-    trust_region(number_e, C, T, dt, amp_list, plank)
+    trust_region(number_e, gate, T, dt, amp_list, plank)
+    #trust_region(number_e, C, T, dt, amp_list, plank)
 # arr = [None] * 2
 # generateAllBinaryStrings(2, arr, 0)
 # print(accum_list)
