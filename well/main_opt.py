@@ -1280,7 +1280,7 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     # print("---------------")
 
     # tr = trust_region_problem(np.random.randint(2, size=Nc*Nt*Np).tolist(),.75,Nc*Nt*Np,fid_grad_routine_tr)
-    samples=100
+    samples=1
     sol_list=[]
     best_sol_obj=None
     best_sol_v=None
@@ -1382,25 +1382,27 @@ p1 = math.acos(-1.0/math.sqrt(3))/math.pi
 p2 = math.asin(1.0/math.sqrt(3))/math.pi
 q1 = math.acos(1.0/math.sqrt(3))/math.pi
 q2 = math.asin(1.0/math.sqrt(3))/math.pi
-amp_list = [p1,p2,.5,-.5,1,p1,p2,-p1,1-p2]
-amp_list2 = [-q1,q1-1,2.0/3.0,1-q1,-2.0/3.0,q2-1,1,.5,-.5]
+amp_list = [p1,p2,.5,-.5,1,p1,p2,-p1,1-p2,.25,-.25]
+#amp_list2 = [-q1,q1-1,2.0/3.0,1-q1,-2.0/3.0,q2-1,1,.5,-.5]
 
 for i in range(0,len(amp_list)):
     amp_list[i] = amp_list[i]*math.pi
-    amp_list2[i] = amp_list2[i]*math.pi
+    #amp_list2[i] = amp_list2[i]*math.pi
 
 
-number_e = 3
+number_e = 6
 gate_list = generate_gate_lists_one()
 plank = 1.0
-gate = gate_list[0]
+# gate = gate_list[0]
+# #gate = gate_list[1]
+# #gate = gate_list[2]
 C=C_gate()
 if __name__ == '__main__':
     
     build_dics(number_e-1,int(T/dt),len(amp_list))
     #print(GA_routine_constant(number_e, gate, T, dt, amp_list, plank))
-    trust_region(number_e, gate, T, dt, amp_list, plank)
-    #trust_region(number_e, C, T, dt, amp_list, plank)
+    #trust_region(number_e, gate, T, dt, amp_list, plank)
+    trust_region(number_e, C, T, dt, amp_list, plank)
 # arr = [None] * 2
 # generateAllBinaryStrings(2, arr, 0)
 # print(accum_list)

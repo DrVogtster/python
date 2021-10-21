@@ -171,12 +171,16 @@ class trust_region_problem:
         counter=0
         print(len(v_cur))
         obj_cur,grad_cur = obj_grad_func(v_cur)
+     
         while(tr_radius>=1):
-            
+            if(np.linalg.norm(grad_cur,2)<1e-3):
+                return (obj_cur,v_cur,np.linalg.norm(grad_cur,2))
             knap_problem = knapsack(v_cur,grad_cur,Nc,Nt,Np,amp_list,nl,diconedtothreed,dicthreedtooned,tr_radius,mydic)
             new_v = knap_problem.solve_problem()
            
             obj_new,grad_new = obj_grad_func(new_v)
+            if(new_v==v_cur):
+                return (obj_cur,v_cur,np.linalg.norm(grad_cur,2))
             diff =len(v_cur)*[0]
             my_sum=0.0
             ab_diff=len(v_cur)*[0]
