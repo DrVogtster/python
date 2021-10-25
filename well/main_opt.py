@@ -11,6 +11,7 @@ from matplotlib import colors
 from scoop import futures
 import multiprocessing
 import os
+import time
 
 from deap import base
 from deap import creator
@@ -20,6 +21,7 @@ import matplotlib.pyplot as plt
 from moviepy.editor import VideoClip
 from moviepy.video.io.bindings import mplfig_to_npimage
 from first_order_trust_region_code import *
+import multiprocessing as mp
 
 accum_list = []
 mydic = {}
@@ -1280,49 +1282,40 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     # print("---------------")
 
     # tr = trust_region_problem(np.random.randint(2, size=Nc*Nt*Np).tolist(),.75,Nc*Nt*Np,fid_grad_routine_tr)
-    samples=1
+    samples=20
     sol_list=[]
     best_sol_obj=None
     best_sol_v=None
-    for i in range(0,samples):
-        ig = []
-        for k in range(0,Nt*Np*Nc):
-            ig.append(0.0)
-        
-        if(Nc>2):
-            v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+    pool = mp.Pool(mp.cpu_count())
 
-            for i in range(0,Nc,2):
-                for k in range(0,Nt):
-                    v_list[i][k,random.randint(0, len(amp_list)-1)] = 1
-            
-            out = v_list[0].flatten()
-            for i in range(1,len(v_list)):
-                out =np.concatenate((out, v_list[i].flatten()), axis=None)
-            ig = out.tolist()
-        else:
-            v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
-
-        
-            for k in range(0,Nt):
-                if(k&2==0):
-                    v_list[0][k,random.randint(0, len(amp_list)-1)] = 1
-                else:
-                    v_list[1][k,random.randint(0, len(amp_list)-1)] = 1
-            
-            out = v_list[0].flatten()
-            for i in range(1,len(v_list)):
-                out =np.concatenate((out, v_list[i].flatten()), axis=None)
-            ig = out.tolist()
-
-
-        tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
-
-        (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
-        sol_list.append((obj_cur,v_cur))
-        sol_list.sort(key=lambda x:x[0])
-        best_sol_obj = sol_list[0][0]
-        best_sol_v = sol_list[0][1]
+    pool_list= [pool.apply_async(tr_helper, args=(i,))
+              for i in range(0,samples)]
+    print(pool_list)
+    sol_list= [p.get() for p in pool_list]
+    #sol_list = pool.map(tr_helper, [i for i in range(0,samples)])
+    #pool.close()
+    # sol_list= []
+    # while len(pool_results) > 0:
+    #     to_remove = [] #avoid removing objects during for_loop
+    #     for r in pool_results:
+    #         # check if process is finished
+    #         if r.ready(): 
+    #             # print result (or do any operation with result)
+    #             sol_list.append(r.get())
+    #             #print(r.get())
+    #             to_remove.append(r)
+    #     for remove in to_remove:
+    #         pool_results.remove(remove)
+    #     time.sleep(1) # ensures that this thread doesn't consume too much memory
+    #pool.join() # make sure all processes are completed
+    
+    #sol_list.append((obj_cur,v_cur))
+    for k in range(0,len(sol_list)):
+        print(sol_list[k][0])
+    sol_list.sort(key=lambda x:x[0])
+    best_sol_obj = sol_list[0][0]
+    best_sol_v = sol_list[0][1]
+    pool.close()
 
         
     
@@ -1333,6 +1326,54 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     print("best objective" + str(best_sol_obj))
     #return GA_penalty_constant()
     #return GA_penalty_constant_deap()
+
+
+
+def tr_helper(inner):
+    global mydic
+    global dicthreedtooned
+    global dicthreedtooned
+    
+    Nt = mydic["Nt"]
+    Nc = mydic["Nc"]
+    Np = mydic["Np"]
+    amp_list = mydic["amp"]
+    ig = []
+    for k in range(0,Nt*Np*Nc):
+        ig.append(0.0)
+    
+    if(Nc>2):
+        v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+
+        for i in range(0,Nc,2):
+            for k in range(0,Nt):
+                v_list[i][k,random.randint(0, len(amp_list)-1)] = 1
+        
+        out = v_list[0].flatten()
+        for i in range(1,len(v_list)):
+            out =np.concatenate((out, v_list[i].flatten()), axis=None)
+        ig = out.tolist()
+    else:
+        v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+
+    
+        for k in range(0,Nt):
+            if(k&2==0):
+                v_list[0][k,random.randint(0, len(amp_list)-1)] = 1
+            else:
+                v_list[1][k,random.randint(0, len(amp_list)-1)] = 1
+        
+        out = v_list[0].flatten()
+        for i in range(1,len(v_list)):
+            out =np.concatenate((out, v_list[i].flatten()), axis=None)
+        ig = out.tolist()
+
+
+    tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
+
+    (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
+    print("worker " + str(i))
+    return (obj_cur,v_cur)
 
 
 def fid_grad_routine_tr(v):
@@ -1393,7 +1434,7 @@ for i in range(0,len(amp_list)):
 number_e = 6
 gate_list = generate_gate_lists_one()
 plank = 1.0
-# gate = gate_list[0]
+gate = gate_list[0]
 # #gate = gate_list[1]
 # #gate = gate_list[2]
 C=C_gate()

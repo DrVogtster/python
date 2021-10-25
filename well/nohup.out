@@ -4208,103 +4208,84 @@
   0.          0.         -0.          0.         -0.          0.
   0.          0.          0.          0.         -0.          0.
  -0.          0.          0.          0.        ]
+[<multiprocessing.pool.ApplyResult object at 0x7f6d8c162d10>, <multiprocessing.pool.ApplyResult object at 0x7f6d94300690>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c162ed0>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c162fd0>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a110>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a290>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a390>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a490>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a590>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a250>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a710>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a810>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a910>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16aa10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16ab10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16ac10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16ad10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16ae10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16af10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16e050>]
 2750
+2750
+2750
+2750
+2750275027502750275027502750
+275027502750275027502750
+27502750
+5
+
+
+2750
+
+
+
+
+
+
+
+
+
+
+55
+
+5
+5
+5
+55
+
+555
+
+55
+5
+
+
+55
+5
+
+5
+55
+
+(2750, 150, [2600])
 5
 (2750, 150, [2600])
 5
------------------
-Iteration: 1
-Current Objective: 0.7247449097045059
-New Objective: 0.6000000000000036
-Current Radius2750
------------------
-(2750, 52, [2698])
+(2750, 150, [2600])
 5
------------------
-Iteration: 2
-Current Objective: 0.6000000000000036
-New Objective: 0.6450233757505343
-Current Radius2750
------------------
-(1375, 52, [1323])
+(2750, 150, [2600])
 5
------------------
-Iteration: 3
-Current Objective: 0.6000000000000036
-New Objective: 0.6450233757505343
-Current Radius1375
------------------
-(687, 52, [635])
+(2750, 150, [2600])
 5
------------------
-Iteration: 4
-Current Objective: 0.6000000000000036
-New Objective: 0.6450233757505343
-Current Radius687
------------------
-(343, 52, [291])
+(2750, 150, [2600])
 5
------------------
-Iteration: 5
-Current Objective: 0.6000000000000036
-New Objective: 0.6450233757505343
-Current Radius343
------------------
-(171, 52, [119])
+(2750, 150, [2600])
+(2750, 150, [2600])
 5
------------------
-Iteration: 6
-Current Objective: 0.6000000000000036
-New Objective: 0.6450233757505343
-Current Radius171
------------------
-(85, 52, [33])
+(2750, 150, [2600])
 5
------------------
-Iteration: 7
-Current Objective: 0.6000000000000036
-New Objective: 0.7341198814894014
-Current Radius85
------------------
-(42, 52, [-10])
+(2750, 150, [2600])
 5
------------------
-Iteration: 8
-Current Objective: 0.6000000000000036
-New Objective: 0.7992372991758482
-Current Radius42
------------------
-(21, 52, [-31])
+(2750, 150, [2600])
 5
------------------
-Iteration: 9
-Current Objective: 0.6000000000000036
-New Objective: 0.7676755991449282
-Current Radius21
------------------
-(10, 52, [-42])
+(2750, 150, [2600])
 5
------------------
-Iteration: 10
-Current Objective: 0.6000000000000036
-New Objective: 0.9026291292460229
-Current Radius10
------------------
-(5, 52, [-47])
+(2750, 150, [2600])
 5
------------------
-Iteration: 11
-Current Objective: 0.6000000000000036
-New Objective: 0.7198433153873611
-Current Radius5
------------------
-(2, 52, [-50])
+(2750, 150, [2600])
+(2750, 150, [2600])
 5
------------------
-Iteration: 12
-Current Objective: 0.6000000000000036
-New Objective: 0.8072582285488918
-Current Radius2
------------------
-(1, 52, [-51])
+5
+(2750, 150, [2600])
+5
+(2750, 150, [2600])
+5
+5
+(2750, 150, [2600])
+(2750, 150, [2600])
+5
+5
+(2750, 150, [2600])
 5
