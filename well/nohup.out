@@ -4208,84 +4208,17 @@
   0.          0.         -0.          0.         -0.          0.
   0.          0.          0.          0.         -0.          0.
  -0.          0.          0.          0.        ]
-[<multiprocessing.pool.ApplyResult object at 0x7f6d8c162d10>, <multiprocessing.pool.ApplyResult object at 0x7f6d94300690>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c162ed0>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c162fd0>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a110>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a290>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a390>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a490>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a590>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a250>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a710>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a810>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16a910>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16aa10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16ab10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16ac10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16ad10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16ae10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16af10>, <multiprocessing.pool.ApplyResult object at 0x7f6d8c16e050>]
+hi
+[<multiprocessing.pool.ApplyResult object at 0x7f178c011c90>]
 2750
-2750
-2750
-2750
-2750275027502750275027502750
-275027502750275027502750
-27502750
-5
-
-
-2750
-
-
-
-
-
-
-
-
-
-
-55
-
-5
-5
-5
-55
-
-555
-
-55
-5
-
-
-55
-5
-
-5
-55
-
-(2750, 150, [2600])
 5
 (2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-(2750, 150, [2600])
-5
-5
-(2750, 150, [2600])
-5
-(2750, 150, [2600])
-5
-5
-(2750, 150, [2600])
-(2750, 150, [2600])
-5
-5
-(2750, 150, [2600])
-5
+<class 'IndexError'> main_opt.py 1377
+Traceback (most recent call last):
+  File "main_opt.py", line 1453, in <module>
+    trust_region(number_e, C, T, dt, amp_list, plank)
+  File "main_opt.py", line 1317, in trust_region
+    print(sol_list[k][0])
+TypeError: 'NoneType' object is not subscriptable
+16044.87user 1136.94system 14:20.68elapsed 1996%CPU (0avgtext+0avgdata 305860maxresident)k
+0inputs+3456outputs (0major+193548minor)pagefaults 0swaps

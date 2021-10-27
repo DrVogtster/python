@@ -12,6 +12,7 @@ from scoop import futures
 import multiprocessing
 import os
 import time
+import sys
 
 from deap import base
 from deap import creator
@@ -1217,13 +1218,13 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
         H_list.append(s_iip1)
     mydic["tl"] = time_list
     neighbor_list = []
-    for i in range(0, Nc):
+    for i in range(0, Nc-1):
         temp = []
         lef = i - 1
         cen = i
         right = i + 1
-        if (lef>=0 and lef <= Nc-1):
-            temp.append(lef)
+        # if (lef>=0 and lef <= Nc-1):
+        #     temp.append(lef)
         if (cen>=0  and cen <=  Nc-1):
             temp.append(cen)
         if (right>=0   and right <=  Nc-1):
@@ -1232,7 +1233,8 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
         neighbor_list.append(temp)
 
     mydic["nl"] = neighbor_list
-
+    # print(neighbor_list)
+    # quit()
     x = fong_gen_single()
     
     arr = [None] * number_e
@@ -1282,7 +1284,7 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     # print("---------------")
 
     # tr = trust_region_problem(np.random.randint(2, size=Nc*Nt*Np).tolist(),.75,Nc*Nt*Np,fid_grad_routine_tr)
-    samples=20
+    samples=1
     sol_list=[]
     best_sol_obj=None
     best_sol_v=None
@@ -1290,6 +1292,7 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
 
     pool_list= [pool.apply_async(tr_helper, args=(i,))
               for i in range(0,samples)]
+    print("hi")
     print(pool_list)
     sol_list= [p.get() for p in pool_list]
     #sol_list = pool.map(tr_helper, [i for i in range(0,samples)])
@@ -1333,47 +1336,51 @@ def tr_helper(inner):
     global mydic
     global dicthreedtooned
     global dicthreedtooned
-    
-    Nt = mydic["Nt"]
-    Nc = mydic["Nc"]
-    Np = mydic["Np"]
-    amp_list = mydic["amp"]
-    ig = []
-    for k in range(0,Nt*Np*Nc):
-        ig.append(0.0)
-    
-    if(Nc>2):
-        v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+    try:
+        Nt = mydic["Nt"]
+        Nc = mydic["Nc"]
+        Np = mydic["Np"]
+        amp_list = mydic["amp"]
+        ig = []
+        for k in range(0,Nt*Np*Nc):
+            ig.append(0.0)
+        
+        if(Nc>2):
+            v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
 
-        for i in range(0,Nc,2):
+            for i in range(0,Nc,2):
+                for k in range(0,Nt):
+                    v_list[i][k,random.randint(0, len(amp_list)-1)] = 1
+            
+            out = v_list[0].flatten()
+            for i in range(1,len(v_list)):
+                out =np.concatenate((out, v_list[i].flatten()), axis=None)
+            ig = out.tolist()
+        else:
+            v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+
+        
             for k in range(0,Nt):
-                v_list[i][k,random.randint(0, len(amp_list)-1)] = 1
-        
-        out = v_list[0].flatten()
-        for i in range(1,len(v_list)):
-            out =np.concatenate((out, v_list[i].flatten()), axis=None)
-        ig = out.tolist()
-    else:
-        v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
-
-    
-        for k in range(0,Nt):
-            if(k&2==0):
-                v_list[0][k,random.randint(0, len(amp_list)-1)] = 1
-            else:
-                v_list[1][k,random.randint(0, len(amp_list)-1)] = 1
-        
-        out = v_list[0].flatten()
-        for i in range(1,len(v_list)):
-            out =np.concatenate((out, v_list[i].flatten()), axis=None)
-        ig = out.tolist()
+                if(k&2==0):
+                    v_list[0][k,random.randint(0, len(amp_list)-1)] = 1
+                else:
+                    v_list[1][k,random.randint(0, len(amp_list)-1)] = 1
+            
+            out = v_list[0].flatten()
+            for i in range(1,len(v_list)):
+                out =np.concatenate((out, v_list[i].flatten()), axis=None)
+            ig = out.tolist()
 
 
-    tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
+        tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
 
-    (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
-    print("worker " + str(i))
-    return (obj_cur,v_cur)
+        (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
+        print("worker " + str(i))
+        return (obj_cur,v_cur)
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
 
 
 def fid_grad_routine_tr(v):
