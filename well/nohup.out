@@ -4209,16 +4209,44 @@
   0.          0.          0.          0.         -0.          0.
  -0.          0.          0.          0.        ]
 hi
-[<multiprocessing.pool.ApplyResult object at 0x7f178c011c90>]
+[<multiprocessing.pool.ApplyResult object at 0x7f9e640a1f50>, <multiprocessing.pool.ApplyResult object at 0x7f9e6a572090>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa150>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa250>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa350>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa4d0>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa5d0>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa6d0>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa7d0>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa490>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa950>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aaa50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aab50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aac50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aad50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aae50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aaf50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640ae090>, <multiprocessing.pool.ApplyResult object at 0x7f9e640ae190>, <multiprocessing.pool.ApplyResult object at 0x7f9e640ae290>]
+27502750
+
+275027502750275027502750275027502750275027502750
 2750
+
+
+
+
+
+
+
+
+
+
+
+555
+
+
 5
-(2750, 150, [2600])
-<class 'IndexError'> main_opt.py 1377
-Traceback (most recent call last):
-  File "main_opt.py", line 1453, in <module>
-    trust_region(number_e, C, T, dt, amp_list, plank)
-  File "main_opt.py", line 1317, in trust_region
-    print(sol_list[k][0])
-TypeError: 'NoneType' object is not subscriptable
-16044.87user 1136.94system 14:20.68elapsed 1996%CPU (0avgtext+0avgdata 305860maxresident)k
-0inputs+3456outputs (0major+193548minor)pagefaults 0swaps
+5
+5
+52750
+
+5
+5
+55
+
+55
+
+2750
+527505
+2750
+
+
+27505
+
+5
+5
+5
+5

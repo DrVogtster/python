@@ -1284,7 +1284,7 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     # print("---------------")
 
     # tr = trust_region_problem(np.random.randint(2, size=Nc*Nt*Np).tolist(),.75,Nc*Nt*Np,fid_grad_routine_tr)
-    samples=1
+    samples=20
     sol_list=[]
     best_sol_obj=None
     best_sol_v=None
@@ -1336,51 +1336,48 @@ def tr_helper(inner):
     global mydic
     global dicthreedtooned
     global dicthreedtooned
-    try:
-        Nt = mydic["Nt"]
-        Nc = mydic["Nc"]
-        Np = mydic["Np"]
-        amp_list = mydic["amp"]
-        ig = []
-        for k in range(0,Nt*Np*Nc):
-            ig.append(0.0)
-        
-        if(Nc>2):
-            v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+   
+    Nt = mydic["Nt"]
+    Nc = mydic["Nc"]
+    Np = mydic["Np"]
+    amp_list = mydic["amp"]
+    ig = []
+    for k in range(0,Nt*Np*Nc):
+        ig.append(0.0)
+    
+    if(Nc>2):
+        v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
 
-            for i in range(0,Nc,2):
-                for k in range(0,Nt):
-                    v_list[i][k,random.randint(0, len(amp_list)-1)] = 1
-            
-            out = v_list[0].flatten()
-            for i in range(1,len(v_list)):
-                out =np.concatenate((out, v_list[i].flatten()), axis=None)
-            ig = out.tolist()
-        else:
-            v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
-
-        
+        for i in range(0,Nc,2):
             for k in range(0,Nt):
-                if(k&2==0):
-                    v_list[0][k,random.randint(0, len(amp_list)-1)] = 1
-                else:
-                    v_list[1][k,random.randint(0, len(amp_list)-1)] = 1
-            
-            out = v_list[0].flatten()
-            for i in range(1,len(v_list)):
-                out =np.concatenate((out, v_list[i].flatten()), axis=None)
-            ig = out.tolist()
+                v_list[i][k,random.randint(0, len(amp_list)-1)] = 1
+        
+        out = v_list[0].flatten()
+        for i in range(1,len(v_list)):
+            out =np.concatenate((out, v_list[i].flatten()), axis=None)
+        ig = out.tolist()
+    else:
+        v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+
+    
+        for k in range(0,Nt):
+            if(k&2==0):
+                v_list[0][k,random.randint(0, len(amp_list)-1)] = 1
+            else:
+                v_list[1][k,random.randint(0, len(amp_list)-1)] = 1
+        
+        out = v_list[0].flatten()
+        for i in range(1,len(v_list)):
+            out =np.concatenate((out, v_list[i].flatten()), axis=None)
+        ig = out.tolist()
 
 
-        tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
+    tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
 
-        (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
-        print("worker " + str(i))
-        return (obj_cur,v_cur)
-    except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
+    (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
+    print("worker " + str(i))
+    return (obj_cur,v_cur)
+
 
 
 def fid_grad_routine_tr(v):

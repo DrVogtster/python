@@ -2,6 +2,8 @@ import cplex
 from cplex.exceptions import CplexError
 import numpy as np
 import math
+import os 
+import sys
 
 class knapsack:
     def __init__(self,cur_v,mygrad,Nc,Nt,Np,amp_list,neighborlist,diconedtothreed,dicthreedtooned,tr_radius,mydic):
@@ -94,7 +96,7 @@ class knapsack:
             if(len(neighbor_list)!=1):
                 for i in range(0, Nt):
                     
-                    for j in range(0,Nc):
+                    for j in range(0,Nc-1):
                         cur_var_list=[]
                         cur_num_var=[]
                         neighbors = neighbor_list[j]
@@ -131,7 +133,7 @@ class knapsack:
 
 
             return x
-        except CplexError as exc:
+        except Exception as exc:
             print(exc)
             # mysum=0.0
             # for k in range(0,number_squares):
@@ -152,71 +154,76 @@ class trust_region_problem:
         self.obj_grad_func = obj_grad_func
 
     def execute_tr(self,mydic,diconedtothreed,dicthreedtooned):
-        dim = mydic["dim"]
-        Nc = mydic["Nc"]
-        Np = mydic["Np"]
-        Nt = mydic["Nt"]
-        basis = mydic["basis"]
-        #mydic["v"] = v
-        amp_list = mydic["amp"]
-        gate = mydic["gate"]
-        nl = mydic["nl"]
-        plank = mydic["p"]
-        T_max = mydic["T"]
-        dt = mydic["dt"]
-        v_cur = self.v
-        rho = self.rho
-        tr_radius = self.tr_radius
-        obj_grad_func=self.obj_grad_func
-        counter=0
-        print(len(v_cur))
-        obj_cur,grad_cur = obj_grad_func(v_cur)
-     
-        while(tr_radius>=1):
-            if(np.linalg.norm(grad_cur,2)<1e-3):
-                return (obj_cur,v_cur,np.linalg.norm(grad_cur,2))
-            knap_problem = knapsack(v_cur,grad_cur,Nc,Nt,Np,amp_list,nl,diconedtothreed,dicthreedtooned,tr_radius,mydic)
-            new_v = knap_problem.solve_problem()
-           
-            obj_new,grad_new = obj_grad_func(new_v)
-            if(new_v==v_cur):
-                return (obj_cur,v_cur,np.linalg.norm(grad_cur,2))
-            diff =len(v_cur)*[0]
-            my_sum=0.0
-            ab_diff=len(v_cur)*[0]
-            counter+=1
-            print("-----------------")
-            print("Iteration: " +str(counter))
-            print("Current Objective: " +str(obj_cur))
-            print("New Objective: " +str(obj_new))
-            print("Current Radius" +str(tr_radius))
-
-            print("-----------------")
-            for k in range(0,len(v_cur)):
-                diff[k] = new_v[k]- v_cur[k]
-                my_sum=my_sum+ diff[k]*grad_cur[k]
-                ab_diff[k] = math.fabs(diff[k])
-                #print(grad_cur)
-            # if(my_sum==0):
-            #     print("Stationary point (local) found in " +str(counter) + " iterations")
-            #     break
-            rho_k = (obj_cur - obj_new)/(-my_sum)
-            if(rho_k>rho):
-                v_cur = new_v
-                if(sum(ab_diff)==tr_radius):
-                    tr_radius=tr_radius*2
-                obj_cur = obj_new
-                grad_cur = grad_new
-            elif(rho_k>0):
-                v_cur = new_v
-                obj_cur = obj_new
-                grad_cur = grad_new
-
-            else:
-                tr_radius = int(math.floor(tr_radius/2))
+        try:
+            dim = mydic["dim"]
+            Nc = mydic["Nc"]
+            Np = mydic["Np"]
+            Nt = mydic["Nt"]
+            basis = mydic["basis"]
+            #mydic["v"] = v
+            amp_list = mydic["amp"]
+            gate = mydic["gate"]
+            nl = mydic["nl"]
+            plank = mydic["p"]
+            T_max = mydic["T"]
+            dt = mydic["dt"]
+            v_cur = self.v
+            rho = self.rho
+            tr_radius = self.tr_radius
+            obj_grad_func=self.obj_grad_func
+            counter=0
+            print(len(v_cur))
+            obj_cur,grad_cur = obj_grad_func(v_cur)
+        
+            while(tr_radius>=1):
+                if(np.linalg.norm(grad_cur,2)<1e-3):
+                    return (obj_cur,v_cur,np.linalg.norm(grad_cur,2))
+                knap_problem = knapsack(v_cur,grad_cur,Nc,Nt,Np,amp_list,nl,diconedtothreed,dicthreedtooned,tr_radius,mydic)
+                new_v = knap_problem.solve_problem()
             
-        print("Trust-region terminated successfully")
-        return(obj_cur,v_cur,np.linalg.norm(grad_cur,2))
+                obj_new,grad_new = obj_grad_func(new_v)
+                if(new_v==v_cur):
+                    return (obj_cur,v_cur,np.linalg.norm(grad_cur,2))
+                diff =len(v_cur)*[0]
+                my_sum=0.0
+                ab_diff=len(v_cur)*[0]
+                counter+=1
+                print("-----------------")
+                print("Iteration: " +str(counter))
+                print("Current Objective: " +str(obj_cur))
+                print("New Objective: " +str(obj_new))
+                print("Current Radius" +str(tr_radius))
+
+                print("-----------------")
+                for k in range(0,len(v_cur)):
+                    diff[k] = new_v[k]- v_cur[k]
+                    my_sum=my_sum+ diff[k]*grad_cur[k]
+                    ab_diff[k] = math.fabs(diff[k])
+                    #print(grad_cur)
+                # if(my_sum==0):
+                #     print("Stationary point (local) found in " +str(counter) + " iterations")
+                #     break
+                rho_k = (obj_cur - obj_new)/(-my_sum)
+                if(rho_k>rho):
+                    v_cur = new_v
+                    if(sum(ab_diff)==tr_radius):
+                        tr_radius=tr_radius*2
+                    obj_cur = obj_new
+                    grad_cur = grad_new
+                elif(rho_k>0):
+                    v_cur = new_v
+                    obj_cur = obj_new
+                    grad_cur = grad_new
+
+                else:
+                    tr_radius = int(math.floor(tr_radius/2))
+                
+            print("Trust-region terminated successfully")
+            return(obj_cur,v_cur,np.linalg.norm(grad_cur,2))
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
 
 
 
