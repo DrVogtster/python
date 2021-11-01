@@ -1026,7 +1026,7 @@ def make_movie(v,Nc,Nt,Np,plot_time_each_step):
             indx = np.argmax(current_level[k])
             matrix[0, k ] = 100*current_level[k][indx]
             #print(str(current_level[k][indx]*amp_list[indx]))
-            ax.text(k,0, str(current_level[k][indx]*amp_list[indx]), va='center', ha='center',color="k", weight='bold')
+            ax.text(k,0, str(round(current_level[k][indx]*amp_list[indx],2)), va='center', ha='center',color="k", weight='bold')
     
         #print(matrix)
         cmap = colors.ListedColormap(['white', 'red'])
@@ -1288,13 +1288,17 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     sol_list=[]
     best_sol_obj=None
     best_sol_v=None
-    pool = mp.Pool(mp.cpu_count())
+    # pool = mp.Pool(mp.cpu_count())
 
-    pool_list= [pool.apply_async(tr_helper, args=(i,))
-              for i in range(0,samples)]
+    # pool_list= [pool.apply_async(tr_helper, args=(i,))
+    #           for i in range(0,samples)]
     print("hi")
-    print(pool_list)
-    sol_list= [p.get() for p in pool_list]
+    # print(pool_list)
+    # sol_list= [p.get() for p in pool_list]
+    for i in range(0,samples):
+        res = tr_helper(i)
+        sol_list.append(res)
+
     #sol_list = pool.map(tr_helper, [i for i in range(0,samples)])
     #pool.close()
     # sol_list= []
@@ -1318,7 +1322,7 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     sol_list.sort(key=lambda x:x[0])
     best_sol_obj = sol_list[0][0]
     best_sol_v = sol_list[0][1]
-    pool.close()
+    #pool.close()
 
         
     

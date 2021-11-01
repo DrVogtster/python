@@ -4209,44 +4209,31 @@
   0.          0.          0.          0.         -0.          0.
  -0.          0.          0.          0.        ]
 hi
-[<multiprocessing.pool.ApplyResult object at 0x7f9e640a1f50>, <multiprocessing.pool.ApplyResult object at 0x7f9e6a572090>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa150>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa250>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa350>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa4d0>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa5d0>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa6d0>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa7d0>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa490>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aa950>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aaa50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aab50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aac50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aad50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aae50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640aaf50>, <multiprocessing.pool.ApplyResult object at 0x7f9e640ae090>, <multiprocessing.pool.ApplyResult object at 0x7f9e640ae190>, <multiprocessing.pool.ApplyResult object at 0x7f9e640ae290>]
-27502750
-
-275027502750275027502750275027502750275027502750
 2750
-
-
-
-
-
-
-
-
-
-
-
-555
-
-
 5
+(2750, 150, [2600])
 5
+-----------------
+Iteration: 1
+Current Objective: 0.6403318826415365
+New Objective: 0.863042861998595
+Current Radius2750
+-----------------
+(1375, 150, [1225])
 5
-52750
-
+-----------------
+Iteration: 2
+Current Objective: 0.6403318826415365
+New Objective: 0.863042861998595
+Current Radius1375
+-----------------
+(687, 150, [537])
 5
-5
-55
-
-55
-
-2750
-527505
-2750
-
-
-27505
-
-5
-5
-5
+-----------------
+Iteration: 3
+Current Objective: 0.6403318826415365
+New Objective: 0.863042861998595
+Current Radius687
+-----------------
+(343, 150, [193])
 5
