@@ -13,7 +13,7 @@ import multiprocessing
 import os
 import time
 import sys
-
+import pickle
 from deap import base
 from deap import creator
 from deap import tools
@@ -991,7 +991,7 @@ def GA_penalty_constant():
     return (best_obj, best_sols)
 
 
-def make_movie(v,Nc,Nt,Np,plot_time_each_step):
+def make_movie(v,Nc,Nt,Np,plot_time_each_step,name):
     duration = Nt*plot_time_each_step
 
 
@@ -1323,14 +1323,27 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     best_sol_obj = sol_list[0][0]
     best_sol_v = sol_list[0][1]
     #pool.close()
-
+    print("best objective" + str(best_sol_obj))
         
-    
+    keep_sol = 10
+    dic={}
+    output=[]
     
     #print((obj_cur,v_cur,grad_norm))
-    v_mat=creat_matrix_from_vector(best_sol_v,Nc,Nt,Np)
-    make_movie(v_mat,Nc,Nt,Np,1)
-    print("best objective" + str(best_sol_obj))
+    # v_mat=creat_matrix_from_vector(best_sol_v,Nc,Nt,Np)
+    # make_movie(v_mat,Nc,Nt,Np,1,)
+    
+    for i in range(0,keep_sol):
+        cur_out = []
+        cur_sol = sol_list[i][1]
+        cur_sol_obj = sol_list[i][0]
+        v_mat=creat_matrix_from_vector(cur_sol,Nc,Nt,Np)
+        cur_out.append((v_mat,cur_sol_obj))
+        make_movie(v_mat,Nc,Nt,Np,1,str(i)+"Ne" + str(number_e))
+        os.rename("__temp__.mp4", str(i)+"Ne" + str(number_e) +".mp4")
+        output.append(cur_out)
+    dic["output"] = output
+    pickle.dump( dic, open( str(number_e)+".pkl", "wb" ) )
     #return GA_penalty_constant()
     #return GA_penalty_constant_deap()
 
@@ -1352,10 +1365,18 @@ def tr_helper(inner):
     if(Nc>2):
         v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
 
-        for i in range(0,Nc,2):
-            for k in range(0,Nt):
-                v_list[i][k,random.randint(0, len(amp_list)-1)] = 1
-        
+        # for i in range(0,Nc,2):
+        #     for k in range(0,Nt):
+        #         v_list[i][k,random.randint(0, len(amp_list)-1)] = 1
+        for k in range(0,Nt):
+            be_on = random.randint(0, 1) 
+            if(be_on):
+                for i in range(1,Nc,2):
+                    v_list[i][k,random.randint(0, len(amp_list)-1)] = random.randint(0, 1) 
+            else:
+                for i in range(0,Nc,2):
+                    v_list[i][k,random.randint(0, len(amp_list)-1)] = random.randint(0, 1) 
+
         out = v_list[0].flatten()
         for i in range(1,len(v_list)):
             out =np.concatenate((out, v_list[i].flatten()), axis=None)
