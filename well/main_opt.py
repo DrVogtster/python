@@ -1348,7 +1348,150 @@ def trust_region(number_e, gate, T, dt, amp_list, plank):
     #return GA_penalty_constant_deap()
 
 
+def test_fong(number_e, gate, T, dt, amp_list, plank):
+    #f trust_region(number_e, gate, T, dt, amp_list, plank):
+    global accum_list
+    global mydic
+    global diconedtothreed
+    global dicthreedtooned
+    print(dicthreedtooned)
+    mydic = {}
+    Nt = int(T / dt)
+    Np = len(amp_list)
+    Nc = number_e - 1
+    pen_fun = lambda k: ten_pen(k)
+    sigma_x, sigma_y, sigma_z = generate_sigmas_xyz()
+    real_list = []
+    imag_list = []
+    time_list = []
+    H_list=[]
+    for i in range(0, Nt):
+        time_list.append((i * dt, (i + 1) * dt))
+    for i in range(1, number_e):
+        s_iip1 = s_one(i, i + 1, sigma_x, sigma_y, sigma_z, 1,number_e)
+        H_list.append(s_iip1)
+    mydic["tl"] = time_list
+    neighbor_list = []
+    for i in range(0, Nc-1):
+        temp = []
+        lef = i - 1
+        cen = i
+        right = i + 1
+        # if (lef>=0 and lef <= Nc-1):
+        #     temp.append(lef)
+        if (cen>=0  and cen <=  Nc-1):
+            temp.append(cen)
+        if (right>=0   and right <=  Nc-1):
+            temp.append(right)
 
+        neighbor_list.append(temp)
+
+    mydic["nl"] = neighbor_list
+    # print(neighbor_list)
+    # quit()
+    x = fong_gen_single()
+    
+    arr = [None] * number_e
+    generateAllBinaryStrings(int(number_e/3), arr, 0)
+    
+    gamma = 1
+    sigma = 0
+    e0, e1 = dfs_0_1(gamma, sigma, x)
+    basis_list = ket_gen_dfs(e0, e1, int(number_e/3), accum_list)
+    print(basis_list[0])
+    print(basis_list[1])
+    mydic["basis"] = basis_list
+    mydic["amp"] = amp_list
+    mydic["gate"] = gate
+    mydic["rl"] = real_list
+    mydic["il"] = imag_list
+    mydic["Nc"] = Nc
+    mydic["Np"] = Np
+    mydic["Nt"] = Nt
+    mydic["T"] = T
+    mydic["dt"] = dt
+    mydic["p"] = plank
+    mydic["dim"] = 2 ** number_e
+    mydic["H"] = H_list
+    #print(basis_list)
+    #print(fid_leak_obj(gate, gate, basis_list))
+    # e0 = [1, 0]
+    # e1 = [0,1]
+
+    # H = math.pi*H_list[0]
+    # matprint(H)
+    # sol = scipy.linalg.expm(-1j*H)
+    # e100 = kron(e1,kron(e0,e0))
+    # e010 = kron(e0,kron(e1,e0))
+    # print(e100)
+    # print(e010)
+    # matprint(sol)
+    # print(matprint(sol.conjugate()@sol))
+    # print("-")
+    # print(e100.shape)
+  
+    # res1 = sol@e100
+    # res2 = sol@e010
+    # print("---------------")
+    # print(res1)
+    # print(res2)
+    # print("---------------")
+
+    # tr = trust_region_problem(np.random.randint(2, size=Nc*Nt*Np).tolist(),.75,Nc*Nt*Np,fid_grad_routine_tr)
+    samples=20
+    sol_list=[]
+    best_sol_obj=None
+    best_sol_v=None
+    # pool = mp.Pool(mp.cpu_count())
+
+    # pool_list= [pool.apply_async(tr_helper, args=(i,))
+    #           for i in range(0,samples)]
+    ig = []
+    for k in range(0,Nt*Np*Nc):
+        ig.append(0.0)
+    v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+    #amp_list = [p1,p2,.5,-.5,1,p1,p2,-p1,1-p2,.25,-.25]
+    #v_list[i][k,random.randint(0, len(amp_list)-1)] = random.randint(0, 1) 
+    
+    #[p1,p2,.5,-.5,1,-p1,1-p2,.25,-.25]
+
+    v_list[1][4,4]=1.0
+    v_list[1][6,3]=1.0
+    v_list[1][8,4]=1.0
+
+    v_list[2][1,2]=1.0
+    v_list[2][3,3]=1.0
+    v_list[2][5,3]=1.0
+    v_list[2][7,3]=1.0
+    v_list[2][9,3]=1.0
+    v_list[2][11,2]=1.0
+
+    v_list[3][0,0]=1.0
+    v_list[3][2,4]=1.0
+    v_list[3][4,3]=1.0
+    v_list[3][6,2]=1.0
+    v_list[3][8,3]=1.0
+    v_list[3][10,4]=1.0
+    v_list[3][12,5]=1.0
+    
+    v_list[4][1,1]=1.0
+    v_list[4][3,3]=1.0
+    v_list[4][5,4]=1.0
+    v_list[4][7,4]=1.0
+    v_list[4][9,3]=1.0
+    v_list[4][11,6]=1.0
+    out = v_list[0].flatten()
+    for i in range(1,len(v_list)):
+        out =np.concatenate((out, v_list[i].flatten()), axis=None)
+    ig = out.tolist()
+    v_mat=creat_matrix_from_vector(ig,Nc,Nt,Np)
+    #cur_out.append((v_mat,cur_sol_obj))
+    make_movie(v_mat,Nc,Nt,Np,1,str(i)+"Ne" + str(number_e))
+    print(Nc,Nt,Np)
+    (obj,grad) = fid_grad_routine_tr(ig,False)
+    print("fong obj " + str(obj))
+    print(basis_list)
+    print(accum_list)
 def tr_helper(inner):
     global mydic
     global dicthreedtooned
@@ -1405,7 +1548,7 @@ def tr_helper(inner):
 
 
 
-def fid_grad_routine_tr(v):
+def fid_grad_routine_tr(v,make_grad=True):
     dim = mydic["dim"]
     Nc = mydic["Nc"]
     Np = mydic["Np"]
@@ -1425,40 +1568,45 @@ def fid_grad_routine_tr(v):
     obj = fid_leak_obj(U, gate, basis)
     grad_list=[]
     dx = .001
-    for i in range(0,len(v)):
-        v_tempp = v[:]
-        v_tempm = v[:]
+    if(make_grad):
+        for i in range(0,len(v)):
+            v_tempp = v[:]
+            v_tempm = v[:]
+            
+            v_tempm[i] = v_tempm[i] - dx
+            v_tempp[i] = v_tempp[i] + dx
+            #print(v_tempm[i],v[i],v_tempp[i])
+            v_list_m = creat_matrix_from_vector(v_tempm,Nc,Nt,Np)
+            Um = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list_m,H_list,dim)
+            v_list_p = creat_matrix_from_vector(v_tempp,Nc,Nt,Np)
+            Up = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list_p,H_list,dim)
+            obj1 = fid_leak_obj(Um, gate, basis)
+            obj2 = fid_leak_obj(Up, gate, basis)
         
-        v_tempm[i] = v_tempm[i] - dx
-        v_tempp[i] = v_tempp[i] + dx
-        #print(v_tempm[i],v[i],v_tempp[i])
-        v_list_m = creat_matrix_from_vector(v_tempm,Nc,Nt,Np)
-        Um = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list_m,H_list,dim)
-        v_list_p = creat_matrix_from_vector(v_tempp,Nc,Nt,Np)
-        Up = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list_p,H_list,dim)
-        obj1 = fid_leak_obj(Um, gate, basis)
-        obj2 = fid_leak_obj(Up, gate, basis)
-        grad_i = (obj2-obj1)/(2.0*dx)
-        grad_list.append(-grad_i)
+            grad_i = (obj2-obj1)/(2.0*dx)
+            grad_list.append(-grad_i)
 
 
 
 
     return 1-obj.real,grad_list
 
-T = 250
-dt = 5
+T = 130
+dt = 10
 p1 = math.acos(-1.0/math.sqrt(3))/math.pi
 p2 = math.asin(1.0/math.sqrt(3))/math.pi
 q1 = math.acos(1.0/math.sqrt(3))/math.pi
 q2 = math.asin(1.0/math.sqrt(3))/math.pi
-amp_list = [p1,p2,.5,-.5,1,p1,p2,-p1,1-p2,.25,-.25]
+amp_list = [p1,p2,.5,3.0/2.0,1,-p1,1-p2]
 #amp_list2 = [-q1,q1-1,2.0/3.0,1-q1,-2.0/3.0,q2-1,1,.5,-.5]
+print(-p1,1-p2)
 
 for i in range(0,len(amp_list)):
     amp_list[i] = amp_list[i]*math.pi
     #amp_list2[i] = amp_list2[i]*math.pi
 
+amp_list[5] = amp_list[5] +2*math.pi
+print(amp_list)
 
 number_e = 6
 gate_list = generate_gate_lists_one()
@@ -1472,7 +1620,8 @@ if __name__ == '__main__':
     build_dics(number_e-1,int(T/dt),len(amp_list))
     #print(GA_routine_constant(number_e, gate, T, dt, amp_list, plank))
     #trust_region(number_e, gate, T, dt, amp_list, plank)
-    trust_region(number_e, C, T, dt, amp_list, plank)
+    #trust_region(number_e, C, T, dt, amp_list, plank)
+    test_fong(number_e, C, T, dt, amp_list, plank)
 # arr = [None] * 2
 # generateAllBinaryStrings(2, arr, 0)
 # print(accum_list)

@@ -4343,3 +4343,1523 @@ Current Objective: 0.8790334629317473
 New Objective: 0.9086947306670038
 Current Radius1375
 -----------------
+(687, 53, [634])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.8790334629317473
+New Objective: 0.9086947306670038
+Current Radius687
+-----------------
+(343, 53, [290])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.8790334629317473
+New Objective: 0.9086947306670038
+Current Radius343
+-----------------
+(171, 53, [118])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.8790334629317473
+New Objective: 0.9014011132985864
+Current Radius171
+-----------------
+(85, 53, [32])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.8790334629317473
+New Objective: 0.91000503192385
+Current Radius85
+-----------------
+(42, 53, [-11])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.8790334629317473
+New Objective: 0.871161025679603
+Current Radius42
+-----------------
+(42, 79, [-37])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.871161025679603
+New Objective: 0.9126080503575523
+Current Radius42
+-----------------
+(21, 79, [-58])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.871161025679603
+New Objective: 0.9169299321183234
+Current Radius21
+-----------------
+(10, 79, [-69])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.871161025679603
+New Objective: 0.8910022258583232
+Current Radius10
+-----------------
+(5, 79, [-74])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.871161025679603
+New Objective: 0.8825644288399129
+Current Radius5
+-----------------
+(2, 79, [-77])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.871161025679603
+New Objective: 0.871161025679603
+Current Radius2
+-----------------
+(1, 79, [-78])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.871161025679603
+New Objective: 0.8544262364307732
+Current Radius1
+-----------------
+(1, 78, [-77])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.8544262364307732
+New Objective: 0.8277334624295059
+Current Radius1
+-----------------
+(1, 79, [-78])
+5
+-----------------
+Iteration: 15
+Current Objective: 0.8277334624295059
+New Objective: 0.7864910088262934
+Current Radius1
+-----------------
+(1, 80, [-79])
+5
+-----------------
+Iteration: 16
+Current Objective: 0.7864910088262934
+New Objective: 0.7238784235897318
+Current Radius1
+-----------------
+(1, 81, [-80])
+5
+-----------------
+Iteration: 17
+Current Objective: 0.7238784235897318
+New Objective: 0.7864910088262934
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 54, [2696])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.7681560935205033
+New Objective: 0.9018411373330444
+Current Radius2750
+-----------------
+(1375, 54, [1321])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.7681560935205033
+New Objective: 0.9018411373330444
+Current Radius1375
+-----------------
+(687, 54, [633])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.7681560935205033
+New Objective: 0.9018411373330444
+Current Radius687
+-----------------
+(343, 54, [289])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.7681560935205033
+New Objective: 0.9018411373330444
+Current Radius343
+-----------------
+(171, 54, [117])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.7681560935205033
+New Objective: 0.9209054683892192
+Current Radius171
+-----------------
+(85, 54, [31])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.7681560935205033
+New Objective: 0.8853040930183309
+Current Radius85
+-----------------
+(42, 54, [-12])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.7681560935205033
+New Objective: 0.8608041165582869
+Current Radius42
+-----------------
+(21, 54, [-33])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.7681560935205033
+New Objective: 0.8731878718806634
+Current Radius21
+-----------------
+(10, 54, [-44])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.7681560935205033
+New Objective: 0.7823066167438346
+Current Radius10
+-----------------
+(5, 54, [-49])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.7681560935205033
+New Objective: 0.8800749011853283
+Current Radius5
+-----------------
+(2, 54, [-52])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.7681560935205033
+New Objective: 0.8856953140060361
+Current Radius2
+-----------------
+(1, 54, [-53])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.7681560935205033
+New Objective: 0.681559535934712
+Current Radius1
+-----------------
+(1, 53, [-52])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.681559535934712
+New Objective: 0.8302397118307036
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 64, [2686])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.8828775890539146
+New Objective: 0.9114553678027686
+Current Radius2750
+-----------------
+(1375, 64, [1311])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.8828775890539146
+New Objective: 0.9114553678027686
+Current Radius1375
+-----------------
+(687, 64, [623])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.8828775890539146
+New Objective: 0.9114553678027686
+Current Radius687
+-----------------
+(343, 64, [279])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.8828775890539146
+New Objective: 0.9114553678027686
+Current Radius343
+-----------------
+(171, 64, [107])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.8828775890539146
+New Objective: 0.9199429178275073
+Current Radius171
+-----------------
+(85, 64, [21])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.8828775890539146
+New Objective: 0.8597803831130422
+Current Radius85
+-----------------
+(85, 117, [-32])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.8597803831130422
+New Objective: 0.8756355547629334
+Current Radius85
+-----------------
+(42, 117, [-75])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.8597803831130422
+New Objective: 0.901592761205132
+Current Radius42
+-----------------
+(21, 117, [-96])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.8597803831130422
+New Objective: 0.8944816773363181
+Current Radius21
+-----------------
+(10, 117, [-107])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.8597803831130422
+New Objective: 0.8495877041123363
+Current Radius10
+-----------------
+(10, 113, [-103])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.8495877041123363
+New Objective: 0.8926876247765094
+Current Radius10
+-----------------
+(5, 113, [-108])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.8495877041123363
+New Objective: 0.8959244076488397
+Current Radius5
+-----------------
+(2, 113, [-111])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.8495877041123363
+New Objective: 0.900215453453502
+Current Radius2
+-----------------
+(1, 113, [-112])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.8495877041123363
+New Objective: 0.7744199615734472
+Current Radius1
+-----------------
+(1, 114, [-113])
+5
+-----------------
+Iteration: 15
+Current Objective: 0.7744199615734472
+New Objective: 0.8943643647110129
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 64, [2686])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.8410024110167893
+New Objective: 0.8689762607435659
+Current Radius2750
+-----------------
+(1375, 64, [1311])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.8410024110167893
+New Objective: 0.8689762607435659
+Current Radius1375
+-----------------
+(687, 64, [623])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.8410024110167893
+New Objective: 0.8689762607435659
+Current Radius687
+-----------------
+(343, 64, [279])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.8410024110167893
+New Objective: 0.8689762607435659
+Current Radius343
+-----------------
+(171, 64, [107])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.8410024110167893
+New Objective: 0.8968127446438873
+Current Radius171
+-----------------
+(85, 64, [21])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.8410024110167893
+New Objective: 0.8932749819105315
+Current Radius85
+-----------------
+(42, 64, [-22])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.8410024110167893
+New Objective: 0.8391802122802076
+Current Radius42
+-----------------
+(42, 94, [-52])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.8391802122802076
+New Objective: 0.9062751302155827
+Current Radius42
+-----------------
+(21, 94, [-73])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.8391802122802076
+New Objective: 0.8579136515805468
+Current Radius21
+-----------------
+(10, 94, [-84])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.8391802122802076
+New Objective: 0.84642207579048
+Current Radius10
+-----------------
+(5, 94, [-89])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.8391802122802076
+New Objective: 0.8851338758118896
+Current Radius5
+-----------------
+(2, 94, [-92])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.8391802122802076
+New Objective: 0.8391802122802076
+Current Radius2
+-----------------
+(1, 94, [-93])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.8391802122802076
+New Objective: 0.8004175541528987
+Current Radius1
+-----------------
+(1, 95, [-94])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.8004175541528987
+New Objective: 0.7879363210418042
+Current Radius1
+-----------------
+(1, 96, [-95])
+5
+-----------------
+Iteration: 15
+Current Objective: 0.7879363210418042
+New Objective: 0.8004175541528987
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 55, [2695])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.8758434716705878
+New Objective: 0.8535419311104998
+Current Radius2750
+-----------------
+(2750, 137, [2613])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.8535419311104998
+New Objective: 0.7801398815845029
+Current Radius2750
+-----------------
+(2750, 139, [2611])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.7801398815845029
+New Objective: 0.7869632566152899
+Current Radius2750
+-----------------
+(1375, 139, [1236])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.7801398815845029
+New Objective: 0.7869632566152899
+Current Radius1375
+-----------------
+(687, 139, [548])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.7801398815845029
+New Objective: 0.7869632566152899
+Current Radius687
+-----------------
+(343, 139, [204])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.7801398815845029
+New Objective: 0.7869632566152899
+Current Radius343
+-----------------
+(171, 139, [32])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.7801398815845029
+New Objective: 0.7869632566152899
+Current Radius171
+-----------------
+(85, 139, [-54])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.7801398815845029
+New Objective: 0.8220328796542669
+Current Radius85
+-----------------
+(42, 139, [-97])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.7801398815845029
+New Objective: 0.7646002147163854
+Current Radius42
+-----------------
+(42, 141, [-99])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.7646002147163854
+New Objective: 0.869300372259013
+Current Radius42
+-----------------
+(21, 141, [-120])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.7646002147163854
+New Objective: 0.7611888815595613
+Current Radius21
+-----------------
+(21, 140, [-119])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.7611888815595613
+New Objective: 0.8032416599520449
+Current Radius21
+-----------------
+(10, 140, [-130])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.7611888815595613
+New Objective: 0.854403107790624
+Current Radius10
+-----------------
+(5, 140, [-135])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.7611888815595613
+New Objective: 0.7635735983999072
+Current Radius5
+-----------------
+(2, 140, [-138])
+5
+-----------------
+Iteration: 15
+Current Objective: 0.7611888815595613
+New Objective: 0.8433556552435728
+Current Radius2
+-----------------
+(1, 140, [-139])
+5
+-----------------
+Iteration: 16
+Current Objective: 0.7611888815595613
+New Objective: 0.9083050805736713
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 72, [2678])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.8940623205722307
+New Objective: 0.9063058420672202
+Current Radius2750
+-----------------
+(1375, 72, [1303])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.8940623205722307
+New Objective: 0.9063058420672202
+Current Radius1375
+-----------------
+(687, 72, [615])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.8940623205722307
+New Objective: 0.9063058420672202
+Current Radius687
+-----------------
+(343, 72, [271])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.8940623205722307
+New Objective: 0.9063058420672202
+Current Radius343
+-----------------
+(171, 72, [99])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.8940623205722307
+New Objective: 0.9074223672102254
+Current Radius171
+-----------------
+(85, 72, [13])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.8940623205722307
+New Objective: 0.9235536098994677
+Current Radius85
+-----------------
+(42, 72, [-30])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.8940623205722307
+New Objective: 0.9106109589891886
+Current Radius42
+-----------------
+(21, 72, [-51])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.8940623205722307
+New Objective: 0.9025311572928403
+Current Radius21
+-----------------
+(10, 72, [-62])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.8940623205722307
+New Objective: 0.8676182290082172
+Current Radius10
+-----------------
+(10, 78, [-68])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.8676182290082172
+New Objective: 0.8837771639453924
+Current Radius10
+-----------------
+(5, 78, [-73])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.8676182290082172
+New Objective: 0.8572377920810017
+Current Radius5
+-----------------
+(5, 81, [-76])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.8572377920810017
+New Objective: 0.8266501349538428
+Current Radius5
+-----------------
+(5, 78, [-73])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.8266501349538428
+New Objective: 0.8134557834272389
+Current Radius5
+-----------------
+(5, 83, [-78])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.8134557834272389
+New Objective: 0.8904365654179984
+Current Radius5
+-----------------
+(2, 83, [-81])
+5
+-----------------
+Iteration: 15
+Current Objective: 0.8134557834272389
+New Objective: 0.8867672419636898
+Current Radius2
+-----------------
+(1, 83, [-82])
+5
+-----------------
+Iteration: 16
+Current Objective: 0.8134557834272389
+New Objective: 0.8102899173843128
+Current Radius1
+-----------------
+(1, 84, [-83])
+5
+-----------------
+Iteration: 17
+Current Objective: 0.8102899173843128
+New Objective: 0.7484997623318719
+Current Radius1
+-----------------
+(1, 85, [-84])
+5
+-----------------
+Iteration: 18
+Current Objective: 0.7484997623318719
+New Objective: 0.8102899173843128
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 63, [2687])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.8991375698057059
+New Objective: 0.9090169253993695
+Current Radius2750
+-----------------
+(1375, 63, [1312])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.8991375698057059
+New Objective: 0.9090169253993695
+Current Radius1375
+-----------------
+(687, 63, [624])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.8991375698057059
+New Objective: 0.9090169253993695
+Current Radius687
+-----------------
+(343, 63, [280])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.8991375698057059
+New Objective: 0.9090169253993695
+Current Radius343
+-----------------
+(171, 63, [108])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.8991375698057059
+New Objective: 0.8846917061367127
+Current Radius171
+-----------------
+(171, 128, [43])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.8846917061367127
+New Objective: 0.8758915687013434
+Current Radius171
+-----------------
+(171, 128, [43])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.8758915687013434
+New Objective: 0.9230165377814415
+Current Radius171
+-----------------
+(85, 128, [-43])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.8758915687013434
+New Objective: 0.9106525130815913
+Current Radius85
+-----------------
+(42, 128, [-86])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.8758915687013434
+New Objective: 0.9048276362995096
+Current Radius42
+-----------------
+(21, 128, [-107])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.8758915687013434
+New Objective: 0.9118602028222431
+Current Radius21
+-----------------
+(10, 128, [-118])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.8758915687013434
+New Objective: 0.9201463192054727
+Current Radius10
+-----------------
+(5, 128, [-123])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.8758915687013434
+New Objective: 0.8349942674744986
+Current Radius5
+-----------------
+(5, 127, [-122])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.8349942674744986
+New Objective: 0.8834324101073734
+Current Radius5
+-----------------
+(2, 127, [-125])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.8349942674744986
+New Objective: 0.8349942674744986
+Current Radius2
+-----------------
+(1, 127, [-126])
+5
+-----------------
+Iteration: 15
+Current Objective: 0.8349942674744986
+New Objective: 0.8707027954085822
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 56, [2694])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.8683274902234398
+New Objective: 0.8530256474035007
+Current Radius2750
+-----------------
+(2750, 143, [2607])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.8530256474035007
+New Objective: 0.5460132299715446
+Current Radius2750
+-----------------
+(2750, 150, [2600])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.5460132299715446
+New Objective: 0.8349590482147405
+Current Radius2750
+-----------------
+(1375, 150, [1225])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.5460132299715446
+New Objective: 0.8349590482147405
+Current Radius1375
+-----------------
+(687, 150, [537])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.5460132299715446
+New Objective: 0.8349590482147405
+Current Radius687
+-----------------
+(343, 150, [193])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.5460132299715446
+New Objective: 0.8349590482147405
+Current Radius343
+-----------------
+(171, 150, [21])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.5460132299715446
+New Objective: 0.7451600919971104
+Current Radius171
+-----------------
+(85, 150, [-65])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.5460132299715446
+New Objective: 0.5829790327680078
+Current Radius85
+-----------------
+(42, 150, [-108])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.5460132299715446
+New Objective: 0.7353007574190416
+Current Radius42
+-----------------
+(21, 150, [-129])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.5460132299715446
+New Objective: 0.7182975421774189
+Current Radius21
+-----------------
+(10, 150, [-140])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.5460132299715446
+New Objective: 0.4728243767298599
+Current Radius10
+-----------------
+(10, 150, [-140])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.4728243767298599
+New Objective: 0.7601241402643573
+Current Radius10
+-----------------
+(5, 150, [-145])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.4728243767298599
+New Objective: 0.7771756232701428
+Current Radius5
+-----------------
+(2, 150, [-148])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.4728243767298599
+New Objective: 0.47282437672986
+Current Radius2
+-----------------
+(1, 150, [-149])
+5
+-----------------
+Iteration: 15
+Current Objective: 0.4728243767298599
+New Objective: 0.7771756232701428
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 71, [2679])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.9070128192776126
+New Objective: 0.9310894814594715
+Current Radius2750
+-----------------
+(1375, 71, [1304])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.9070128192776126
+New Objective: 0.9310894814594715
+Current Radius1375
+-----------------
+(687, 71, [616])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.9070128192776126
+New Objective: 0.9310894814594715
+Current Radius687
+-----------------
+(343, 71, [272])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.9070128192776126
+New Objective: 0.9310894814594715
+Current Radius343
+-----------------
+(171, 71, [100])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.9070128192776126
+New Objective: 0.9180957539560122
+Current Radius171
+-----------------
+(85, 71, [14])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.9070128192776126
+New Objective: 0.8319366897428729
+Current Radius85
+-----------------
+(85, 112, [-27])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.8319366897428729
+New Objective: 0.90867205041952
+Current Radius85
+-----------------
+(42, 112, [-70])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.8319366897428729
+New Objective: 0.9296043569903294
+Current Radius42
+-----------------
+(21, 112, [-91])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.8319366897428729
+New Objective: 0.870280589840247
+Current Radius21
+-----------------
+(10, 112, [-102])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.8319366897428729
+New Objective: 0.9018854192604071
+Current Radius10
+-----------------
+(5, 112, [-107])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.8319366897428729
+New Objective: 0.8876843173230049
+Current Radius5
+-----------------
+(2, 112, [-110])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.8319366897428729
+New Objective: 0.7751042672036552
+Current Radius2
+-----------------
+(2, 112, [-110])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.7751042672036552
+New Objective: 0.7751042672036552
+Current Radius2
+-----------------
+(1, 112, [-111])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.7751042672036552
+New Objective: 0.8463850290675515
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 53, [2697])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.8455045759238894
+New Objective: 0.836035478407016
+Current Radius2750
+-----------------
+(2750, 127, [2623])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.836035478407016
+New Objective: 0.9094360066886454
+Current Radius2750
+-----------------
+(1375, 127, [1248])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.836035478407016
+New Objective: 0.9094360066886454
+Current Radius1375
+-----------------
+(687, 127, [560])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.836035478407016
+New Objective: 0.9094360066886454
+Current Radius687
+-----------------
+(343, 127, [216])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.836035478407016
+New Objective: 0.9094360066886454
+Current Radius343
+-----------------
+(171, 127, [44])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.836035478407016
+New Objective: 0.9094360066886454
+Current Radius171
+-----------------
+(85, 127, [-42])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.836035478407016
+New Objective: 0.9213709086639977
+Current Radius85
+-----------------
+(42, 127, [-85])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.836035478407016
+New Objective: 0.8887367998753128
+Current Radius42
+-----------------
+(21, 127, [-106])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.836035478407016
+New Objective: 0.9197208641281288
+Current Radius21
+-----------------
+(10, 127, [-117])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.836035478407016
+New Objective: 0.7767425042126693
+Current Radius10
+-----------------
+(10, 125, [-115])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.7767425042126693
+New Objective: 0.77674250421267
+Current Radius10
+-----------------
+(5, 125, [-120])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.7767425042126693
+New Objective: 0.80089680685573
+Current Radius5
+-----------------
+(2, 125, [-123])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.7767425042126693
+New Objective: 0.7767425042126695
+Current Radius2
+-----------------
+(1, 125, [-124])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.7767425042126693
+New Objective: 0.8008968068557301
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 64, [2686])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.9147623672123559
+New Objective: 0.8407576257065628
+Current Radius2750
+-----------------
+(2750, 131, [2619])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.8407576257065628
+New Objective: 0.9066732653520276
+Current Radius2750
+-----------------
+(1375, 131, [1244])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.8407576257065628
+New Objective: 0.9066732653520276
+Current Radius1375
+-----------------
+(687, 131, [556])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.8407576257065628
+New Objective: 0.9066732653520276
+Current Radius687
+-----------------
+(343, 131, [212])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.8407576257065628
+New Objective: 0.9066732653520276
+Current Radius343
+-----------------
+(171, 131, [40])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.8407576257065628
+New Objective: 0.8910000844795162
+Current Radius171
+-----------------
+(85, 131, [-46])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.8407576257065628
+New Objective: 0.8789623799906798
+Current Radius85
+-----------------
+(42, 131, [-89])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.8407576257065628
+New Objective: 0.8807913281588775
+Current Radius42
+-----------------
+(21, 131, [-110])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.8407576257065628
+New Objective: 0.9122686496910203
+Current Radius21
+-----------------
+(10, 131, [-121])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.8407576257065628
+New Objective: 0.7595380650677018
+Current Radius10
+-----------------
+(10, 131, [-121])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.7595380650677018
+New Objective: 0.8939196080278536
+Current Radius10
+-----------------
+(5, 131, [-126])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.7595380650677018
+New Objective: 0.8727131736761937
+Current Radius5
+-----------------
+(2, 131, [-129])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.7595380650677018
+New Objective: 0.7595380650677018
+Current Radius2
+-----------------
+(1, 131, [-130])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.7595380650677018
+New Objective: 0.8727131736761936
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 58, [2692])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.9045483113513308
+New Objective: 0.9128326163451852
+Current Radius2750
+-----------------
+(1375, 58, [1317])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.9045483113513308
+New Objective: 0.9128326163451852
+Current Radius1375
+-----------------
+(687, 58, [629])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.9045483113513308
+New Objective: 0.9128326163451852
+Current Radius687
+-----------------
+(343, 58, [285])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.9045483113513308
+New Objective: 0.9128326163451852
+Current Radius343
+-----------------
+(171, 58, [113])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.9045483113513308
+New Objective: 0.9021894093400249
+Current Radius171
+-----------------
+(171, 128, [43])
+5
+-----------------
+Iteration: 6
+Current Objective: 0.9021894093400249
+New Objective: 0.8662882708295366
+Current Radius171
+-----------------
+(171, 135, [36])
+5
+-----------------
+Iteration: 7
+Current Objective: 0.8662882708295366
+New Objective: 0.8765783193387194
+Current Radius171
+-----------------
+(85, 135, [-50])
+5
+-----------------
+Iteration: 8
+Current Objective: 0.8662882708295366
+New Objective: 0.8867812447388971
+Current Radius85
+-----------------
+(42, 135, [-93])
+5
+-----------------
+Iteration: 9
+Current Objective: 0.8662882708295366
+New Objective: 0.8983443325817584
+Current Radius42
+-----------------
+(21, 135, [-114])
+5
+-----------------
+Iteration: 10
+Current Objective: 0.8662882708295366
+New Objective: 0.8763775946051392
+Current Radius21
+-----------------
+(10, 135, [-125])
+5
+-----------------
+Iteration: 11
+Current Objective: 0.8662882708295366
+New Objective: 0.8401904426729208
+Current Radius10
+-----------------
+(10, 133, [-123])
+5
+-----------------
+Iteration: 12
+Current Objective: 0.8401904426729208
+New Objective: 0.8630961700156499
+Current Radius10
+-----------------
+(5, 133, [-128])
+5
+-----------------
+Iteration: 13
+Current Objective: 0.8401904426729208
+New Objective: 0.8411381498618377
+Current Radius5
+-----------------
+(2, 133, [-131])
+5
+-----------------
+Iteration: 14
+Current Objective: 0.8401904426729208
+New Objective: 0.8933688233123412
+Current Radius2
+-----------------
+(1, 133, [-132])
+5
+-----------------
+Iteration: 15
+Current Objective: 0.8401904426729208
+New Objective: 0.8492529295451394
+Current Radius1
+-----------------
+Trust-region terminated successfully
+worker 4
+2750
+5
+(2750, 62, [2688])
+5
+-----------------
+Iteration: 1
+Current Objective: 0.9009634424825447
+New Objective: 0.8328065581992169
+Current Radius2750
+-----------------
+(2750, 123, [2627])
+5
+-----------------
+Iteration: 2
+Current Objective: 0.8328065581992169
+New Objective: 0.8896409414830249
+Current Radius2750
+-----------------
+(1375, 123, [1252])
+5
+-----------------
+Iteration: 3
+Current Objective: 0.8328065581992169
+New Objective: 0.8896409414830249
+Current Radius1375
+-----------------
+(687, 123, [564])
+5
+-----------------
+Iteration: 4
+Current Objective: 0.8328065581992169
+New Objective: 0.8896409414830249
+Current Radius687
+-----------------
+(343, 123, [220])
+5
+-----------------
+Iteration: 5
+Current Objective: 0.8328065581992169
+New Objective: 0.8896409414830249
+Current Radius343
+-----------------
