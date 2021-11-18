@@ -331,9 +331,24 @@ def produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list,H_list,dim):
         H_temp = np.zeros((dim,dim))
         for i in range(0,Nc):
             for p in range(0,Np):
-            
+                # print(H_temp.shape)
+                # print(H_list[i].shape)
+                # quit()
+                # if(v_list[i][k,p]==1):
+                #     print(i)
+                #     print(k)
+                #     print(p)
+                #     print(amp_list[p])
+                #     quit()
                 H_temp = H_temp + v_list[i][k,p]*H_list[i]*((amp_list[p]/dt))
+                
+        
+        # print(np.allclose(H_temp*(dt/math.pi),H_list[0]))
+        # quit()
         cur_sol = scipy.linalg.expm(-1j*dt*(H_temp)/plank)
+
+
+
         sol =  np.matmul(cur_sol,sol)
     return sol
 
@@ -344,7 +359,10 @@ def produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list,H_list,dim):
 def fid_leak_obj(U, V, basis_list):
     size = len(basis_list)
     U_hat = np.zeros((size, size),dtype = 'complex_')
+    #V=np.kron(Z_theta(-math.pi),np.eye(2))
     bad_states = []
+    #print(np.array_str(U, precision=2, suppress_small=True))
+    #quit()
     for i in range(0, size):
         for j in range(0, size):
             # print(basis_list[i])
@@ -354,7 +372,9 @@ def fid_leak_obj(U, V, basis_list):
             #U_hat[i,j] = (basis_list[i].T.dot(U)*basis_list[j].T).sum(axis=1)
             if (V[i, j] == 0.0):
                 bad_states.append((basis_list[i], basis_list[j]))
-
+    print("UHAT")
+    print(np.array_str(U_hat, precision=2, suppress_small=True))
+    
     M = (V.conj().T) @ U_hat
     
     TrM = np.trace(M)
@@ -362,12 +382,14 @@ def fid_leak_obj(U, V, basis_list):
     # TrMr = TrM.real
     # TrMi = TrM.imag
     #mod_squared = TrMr ** 2 + TrMi ** 2
-    # print(size)
+   
     fid = ((1.0) / (size * (size + 1))) * (np.trace(M @ M.conj().T) + np.abs(TrM)**2)
     # print(fid)
     leak = 0
     # for k in range(0,len(bad_states)):
     #     leak = leak + np.abs(np.transpose(bad_states[k][0]*U*bad_states[k][1]))**2
+    print(fid)
+    quit()
     return fid.real + leak.real
     # pederson
 
@@ -1454,32 +1476,36 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
     #v_list[i][k,random.randint(0, len(amp_list)-1)] = random.randint(0, 1) 
     
     #[p1,p2,.5,-.5,1,-p1,1-p2,.25,-.25]
-
-    v_list[1][4,4]=1.0
-    v_list[1][6,3]=1.0
-    v_list[1][8,4]=1.0
-
-    v_list[2][1,2]=1.0
-    v_list[2][3,3]=1.0
-    v_list[2][5,3]=1.0
-    v_list[2][7,3]=1.0
-    v_list[2][9,3]=1.0
-    v_list[2][11,2]=1.0
-
-    v_list[3][0,0]=1.0
-    v_list[3][2,4]=1.0
-    v_list[3][4,3]=1.0
-    v_list[3][6,2]=1.0
-    v_list[3][8,3]=1.0
-    v_list[3][10,4]=1.0
-    v_list[3][12,5]=1.0
+    #[p1,p2,.5,3.0/2.0,1,-p1,1-p2]
+    v_list[0][0,4]=1.0
     
-    v_list[4][1,1]=1.0
-    v_list[4][3,3]=1.0
-    v_list[4][5,4]=1.0
-    v_list[4][7,4]=1.0
-    v_list[4][9,3]=1.0
-    v_list[4][11,6]=1.0
+    
+    # [p1,p2,.5,3.0/2.0,1,-p1,1-p2]
+    # v_list[1][4,4]=1.0
+    # v_list[1][6,3]=1.0
+    # v_list[1][8,4]=1.0
+
+    # v_list[2][1,2]=1.0
+    # v_list[2][3,3]=1.0
+    # v_list[2][5,3]=1.0
+    # v_list[2][7,3]=1.0
+    # v_list[2][9,3]=1.0
+    # v_list[2][11,2]=1.0
+
+    # v_list[3][0,0]=1.0
+    # v_list[3][2,4]=1.0
+    # v_list[3][4,3]=1.0
+    # v_list[3][6,2]=1.0
+    # v_list[3][8,3]=1.0
+    # v_list[3][10,4]=1.0
+    # v_list[3][12,5]=1.0
+    
+    # v_list[4][1,1]=1.0
+    # v_list[4][3,3]=1.0
+    # v_list[4][5,4]=1.0
+    # v_list[4][7,4]=1.0
+    # v_list[4][9,3]=1.0
+    # v_list[4][11,6]=1.0
     out = v_list[0].flatten()
     for i in range(1,len(v_list)):
         out =np.concatenate((out, v_list[i].flatten()), axis=None)
@@ -1564,7 +1590,12 @@ def fid_grad_routine_tr(v,make_grad=True):
     v_list=creat_matrix_from_vector(v,Nc,Nt,Np)
     H_list = mydic["H"]
     print(len(v_list))
+ 
     U = produce_state_constant_pulse(amp_list,plank,Nc,Nt,dt,v_list,H_list,dim)
+    # my_size = U.shape
+    
+    # U = np.eye(my_size[0])
+   
     obj = fid_leak_obj(U, gate, basis)
     grad_list=[]
     dx = .001

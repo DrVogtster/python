@@ -140,7 +140,7 @@ def dfs_0_1(gamma,sigma,f_mat):
     f1= f_mat[:,0]
     f2 = f_mat[:,1]
     f3 = f_mat[:,2]
-    f4 = f_mat[:,3]
+    f4= f_mat[:,3]
 
     dfs_0 = (gamma*f1 + sigma*f2)
     dfs_1= (gamma*f3 + sigma*f4)
@@ -150,8 +150,8 @@ def dfs_0_1(gamma,sigma,f_mat):
 def s_one(m,n,sigma_x,sigma_y,sigma_z,k_min,k_max):
     #k_min=3
     dim=2
-    matprint(.25*(sigmas_n(m,sigma_x,k_min,k_max,dim)@sigmas_n(n,sigma_x,k_min,k_max,dim) + sigmas_n(m,sigma_y,k_min,k_max,dim)@sigmas_n(n,sigma_y,k_min,k_max,dim) + sigmas_n(m,sigma_z,k_min,k_max,dim)@sigmas_n(n,sigma_z,k_min,k_max,dim))
-)
+#     matprint(.25*(sigmas_n(m,sigma_x,k_min,k_max,dim)@sigmas_n(n,sigma_x,k_min,k_max,dim) + sigmas_n(m,sigma_y,k_min,k_max,dim)@sigmas_n(n,sigma_y,k_min,k_max,dim) + sigmas_n(m,sigma_z,k_min,k_max,dim)@sigmas_n(n,sigma_z,k_min,k_max,dim))
+# )
     return .25*(sigmas_n(m,sigma_x,k_min,k_max,dim)@sigmas_n(n,sigma_x,k_min,k_max,dim) + sigmas_n(m,sigma_y,k_min,k_max,dim)@sigmas_n(n,sigma_y,k_min,k_max,dim) + sigmas_n(m,sigma_z,k_min,k_max,dim)@sigmas_n(n,sigma_z,k_min,k_max,dim))
 
 def generate_sigmas_xyz():
@@ -175,10 +175,30 @@ def generate_sigmas_xyz():
 def sigmas_n(n,sigma,k_min,k_max,dim):
     eye = np.eye(dim)
     start=None
+
+    # if(k_min==n):
+    #     start = np.kron(sigma,eye)
+    # elif(k_min+1==n):
+    #     start = np.kron(eye, sigma)
+    # else:
+    #     start=np.kron(eye,eye)    
+
+
+    # k_min=k_min+2
+    # while(k_min<=k_max):
+    #     if(k_min==n):
+    #         start = np.kron(start,sigma)
+    #     else:
+    #         start = np.kron(start,eye)
+
+
+        
+    #     k_min=k_min+1
+        
     if(k_max==n):
-        start = np.kron(eye,sigma)
+        start = np.kron(sigma,eye)
     elif(k_max-1==n):
-        start = np.kron(sigma, eye)
+        start = np.kron(eye, sigma)
     else:
         start=np.kron(eye,eye)    
 
@@ -193,9 +213,9 @@ def sigmas_n(n,sigma,k_min,k_max,dim):
 
         
         k_max = k_max-1
-    # print("lol")
-    # print(start)
-    # print(n)
+    print("lol")
+    print(start)
+    print(n)
     matprint(start)
     return start
 
