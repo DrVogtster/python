@@ -388,8 +388,8 @@ def fid_leak_obj(U, V, basis_list):
     leak = 0
     # for k in range(0,len(bad_states)):
     #     leak = leak + np.abs(np.transpose(bad_states[k][0]*U*bad_states[k][1]))**2
-    print(fid)
-    quit()
+    # print(fid)
+    # quit()
     return fid.real + leak.real
     # pederson
 
@@ -1389,9 +1389,17 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
     H_list=[]
     for i in range(0, Nt):
         time_list.append((i * dt, (i + 1) * dt))
-    for i in range(1, number_e):
-        s_iip1 = s_one(i, i + 1, sigma_x, sigma_y, sigma_z, 1,number_e)
+    
+    my_order = [(3,2),(2,1),(1,4),(4,5),(5,6)]
+    # for i in range(1, number_e):
+    #     s_iip1 = s_one(i, i + 1, sigma_x, sigma_y, sigma_z, 1,number_e)
+    #     H_list.append(s_iip1)
+    for ele in my_order:
+        s_iip1 = s_one(ele[0], ele[1], sigma_x, sigma_y, sigma_z, 1,number_e)
         H_list.append(s_iip1)
+
+        # s_iip1 = s_one(i, i + 1, sigma_x, sigma_y, sigma_z, 1,number_e)
+        # H_list.append(s_iip1)
     mydic["tl"] = time_list
     neighbor_list = []
     for i in range(0, Nc-1):
@@ -1477,35 +1485,35 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
     
     #[p1,p2,.5,-.5,1,-p1,1-p2,.25,-.25]
     #[p1,p2,.5,3.0/2.0,1,-p1,1-p2]
-    v_list[0][0,4]=1.0
+    #v_list[0][0,4]=1.0
     
     
     # [p1,p2,.5,3.0/2.0,1,-p1,1-p2]
-    # v_list[1][4,4]=1.0
-    # v_list[1][6,3]=1.0
-    # v_list[1][8,4]=1.0
+    v_list[1][4,4]=1.0
+    v_list[1][6,3]=1.0
+    v_list[1][8,4]=1.0
 
-    # v_list[2][1,2]=1.0
-    # v_list[2][3,3]=1.0
-    # v_list[2][5,3]=1.0
-    # v_list[2][7,3]=1.0
-    # v_list[2][9,3]=1.0
-    # v_list[2][11,2]=1.0
+    v_list[2][1,2]=1.0
+    v_list[2][3,3]=1.0
+    v_list[2][5,3]=1.0
+    v_list[2][7,3]=1.0
+    v_list[2][9,3]=1.0
+    v_list[2][11,2]=1.0
 
-    # v_list[3][0,0]=1.0
-    # v_list[3][2,4]=1.0
-    # v_list[3][4,3]=1.0
-    # v_list[3][6,2]=1.0
-    # v_list[3][8,3]=1.0
-    # v_list[3][10,4]=1.0
-    # v_list[3][12,5]=1.0
+    v_list[3][0,0]=1.0
+    v_list[3][2,4]=1.0
+    v_list[3][4,3]=1.0
+    v_list[3][6,2]=1.0
+    v_list[3][8,3]=1.0
+    v_list[3][10,4]=1.0
+    v_list[3][12,5]=1.0
     
-    # v_list[4][1,1]=1.0
-    # v_list[4][3,3]=1.0
-    # v_list[4][5,4]=1.0
-    # v_list[4][7,4]=1.0
-    # v_list[4][9,3]=1.0
-    # v_list[4][11,6]=1.0
+    v_list[4][1,1]=1.0
+    v_list[4][3,3]=1.0
+    v_list[4][5,4]=1.0
+    v_list[4][7,4]=1.0
+    v_list[4][9,3]=1.0
+    v_list[4][11,6]=1.0
     out = v_list[0].flatten()
     for i in range(1,len(v_list)):
         out =np.concatenate((out, v_list[i].flatten()), axis=None)
@@ -1516,8 +1524,8 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
     print(Nc,Nt,Np)
     (obj,grad) = fid_grad_routine_tr(ig,False)
     print("fong obj " + str(obj))
-    print(basis_list)
-    print(accum_list)
+    # print(basis_list)
+    # print(accum_list)
 def tr_helper(inner):
     global mydic
     global dicthreedtooned
