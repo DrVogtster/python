@@ -133,7 +133,8 @@ def fong_gen_single():
     f_mat[:,5] = (math.sqrt(1.0/3.0))*(e_001 +e_010+e_100)
     f_mat[:,6] = (math.sqrt(1.0/3.0))*(e_011 +e_101+e_110)
     f_mat[:,7] = e_111
-
+    print(f_mat[:,0:4])
+    quit()
     return f_mat
 def dfs_0_1(gamma,sigma,f_mat):
 
@@ -176,43 +177,43 @@ def sigmas_n(n,sigma,k_min,k_max,dim):
     eye = np.eye(dim)
     start=None
 
-    # if(k_min==n):
-    #     start = np.kron(sigma,eye)
-    # elif(k_min+1==n):
-    #     start = np.kron(eye, sigma)
-    # else:
-    #     start=np.kron(eye,eye)    
-
-
-    # k_min=k_min+2
-    # while(k_min<=k_max):
-    #     if(k_min==n):
-    #         start = np.kron(start,sigma)
-    #     else:
-    #         start = np.kron(start,eye)
-
-
-        
-    #     k_min=k_min+1
-        
-    if(k_max==n):
+    if(k_min==n):
         start = np.kron(sigma,eye)
-    elif(k_max-1==n):
+    elif(k_min+1==n):
         start = np.kron(eye, sigma)
     else:
         start=np.kron(eye,eye)    
 
 
-    k_max = k_max-2
-    while(k_max>=1):
-        if(k_max==n):
-            start = np.kron(sigma,start)
+    k_min=k_min+2
+    while(k_min<=k_max):
+        if(k_min==n):
+            start = np.kron(start,sigma)
         else:
-            start = np.kron(eye,start)
+            start = np.kron(start,eye)
 
 
         
-        k_max = k_max-1
+        k_min=k_min+1
+        
+    # if(k_max==n):
+    #     start = np.kron(sigma,eye)
+    # elif(k_max-1==n):
+    #     start = np.kron(eye, sigma)
+    # else:
+    #     start=np.kron(eye,eye)    
+
+
+    # k_max = k_max-2
+    # while(k_max>=1):
+    #     if(k_max==n):
+    #         start = np.kron(sigma,start)
+    #     else:
+    #         start = np.kron(eye,start)
+
+
+        
+    #     k_max = k_max-1
     print("lol")
     print(start)
     print(n)
