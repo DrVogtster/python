@@ -8,7 +8,7 @@ from gates import *
 import pygad
 from matplotlib import cm
 from matplotlib import colors
-from scoop import futures
+#from scoop import futures
 import multiprocessing
 import os
 import time

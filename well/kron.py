@@ -57,6 +57,8 @@ def ret_vec(val,e0,e1):
 def ket_gen(order):
     e0=np.asarray([1,0])
     e1=np.asarray([0,1])
+    print(order)
+    quit()
     k = len(order)-3
     temp =np.kron(ret_vec(order[-2],e0,e1),ret_vec(order[-1],e0,e1)) 
     while(k>=0):
@@ -74,18 +76,17 @@ def ket_gen_dfs(e0,e1,nq,com_list):
     
 
     out_list=[] 
-    print(com_list)
     for p in com_list:
         order = p
-        temp =np.kron(ret_vec(order[-2],e0,e1),ret_vec(order[-1],e0,e1))
-        k = len(order)-3
-        while(k>=0):
+        temp =np.kron(ret_vec(order[0],e0,e1),ret_vec(order[1],e0,e1))
+        k = 2
+        while(k<len(order)):
             if(order[k]==0):
-                temp = np.kron(e0,temp)
+                temp = np.kron(temp,e0)
             else:
-                temp = np.kron(e1,temp)
+                temp = np.kron(temp,e1))
 
-            k=k-1  
+            k=k+1  
         out_list.append(temp)  
     return out_list
 
@@ -133,8 +134,10 @@ def fong_gen_single():
     f_mat[:,5] = (math.sqrt(1.0/3.0))*(e_001 +e_010+e_100)
     f_mat[:,6] = (math.sqrt(1.0/3.0))*(e_011 +e_101+e_110)
     f_mat[:,7] = e_111
-    print(f_mat[:,0:4])
-    quit()
+    # print("start")
+    # print(f_mat[:,3])
+    # print("done")
+    # quit()
     return f_mat
 def dfs_0_1(gamma,sigma,f_mat):
 
