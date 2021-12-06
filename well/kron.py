@@ -84,7 +84,7 @@ def ket_gen_dfs(e0,e1,nq,com_list):
             if(order[k]==0):
                 temp = np.kron(temp,e0)
             else:
-                temp = np.kron(temp,e1))
+                temp = np.kron(temp,e1)
 
             k=k+1  
         out_list.append(temp)  
