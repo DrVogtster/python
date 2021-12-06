@@ -2185,7 +2185,7 @@ for i in range(0,len(amp_list)):
     #amp_list2[i] = amp_list2[i]*math.pi
 
 print(amp_list)
-
+quit()
 # amp_list[5] = amp_list[5] +2*math.pi
 # print(amp_list)
 
