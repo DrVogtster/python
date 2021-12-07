@@ -376,7 +376,7 @@ def fid_leak_obj_theta(U, V, basis_list,theta):
                 bad_states.append((basis_list[i], basis_list[j]))
     
     
-    U_hat = U_hat@(np.kron(np.eye(2),Z_theta(theta)))
+    U_hat = U_hat@(np.kron(Z_theta(theta),np.eye(2)))
     # U_hat[2:4,2:4]= -U_hat[2:4,2:4]
     print("UHAT")
     print(np.array_str(U_hat, precision=2, suppress_small=True))
@@ -423,6 +423,7 @@ def fid_leak_obj(U, V, basis_list):
                 bad_states.append((basis_list[i], basis_list[j]))
     
     # U_hat[2:4,2:4]= -U_hat[2:4,2:4]
+    U_hat = U_hat@(np.kron(Z_theta(math.pi),np.eye(2)))
     print("UHAT")
     print(np.array_str(U_hat, precision=2, suppress_small=True))
     
@@ -1986,6 +1987,7 @@ def test_divincenzo(number_e, gate, T, dt, amp_list, plank):
     # v_list[1][16,4]=1.0
     # v_list[1][18,4]=1.0
     #-----
+    #amp_list = [p1,p2,.5,3.0/2.0,1,-p1,1-p2]
     # v_list[0][1,4]=1.0
 
     # v_list[1][0,4]=1.0
@@ -2163,29 +2165,31 @@ def fid_grad_routine_tr(v,make_grad=True):
 
     return 1-obj.real,grad_list
 
-T = 130
+T = 190
 dt = 10
 p1 = math.acos(-1.0/math.sqrt(3))/math.pi
-p2 = math.asin(1.0/math.sqrt(3))/math.pi
+p2 = math.asin(1.0/3)/math.pi
 q1 = math.acos(1.0/math.sqrt(3))/math.pi
 q2 = math.asin(1.0/math.sqrt(3))/math.pi
-# amp_list = [p1,p2,.5,3.0/2.0,1,-p1,1-p2]
+amp_list = [p1,p2,.5,3.0/2.0,1,2-p1,1-p2]
 #amp_list2 = [-q1,q1-1,2.0/3.0,1-q1,-2.0/3.0,q2-1,1,.5,-.5]
-amp_list = [0.410899,0.207110,0.2775258,0.640505,0.414720,0.147654,0.813126]
-print(-p1,1-p2)
-amp_len = len(amp_list)
-for k in range(0,amp_len):
-    amp_list.append((1.0/math.pi)*np.arctan(-2.0/(np.tan(math.pi*amp_list[k]))))
+#amp_list = [0.410899,0.207110,0.2775258,0.640505,0.414720,0.147654,0.813126]
+#print(-p1,1-p2)
+# amp_len = len(amp_list)
+# for k in range(0,amp_len):
+#     amp_list.append((1.0/math.pi)*np.arctan(-2.0/(np.tan(math.pi*amp_list[k]))))
 
+print(amp_list)
 
 for i in range(0,len(amp_list)):
     amp_list[i] = amp_list[i]*math.pi
-    if(amp_list[i]<0):
-        amp_list[i] = amp_list[i] + 2.0*math.pi
+
+    # if(amp_list[i]<0):
+    #     amp_list[i] = amp_list[i] + 2.0*math.pi
     #amp_list2[i] = amp_list2[i]*math.pi
 
-print(amp_list)
-quit()
+# print(amp_list)
+# quit()
 # amp_list[5] = amp_list[5] +2*math.pi
 # print(amp_list)
 
@@ -2202,9 +2206,9 @@ if __name__ == '__main__':
     #print(GA_routine_constant(number_e, gate, T, dt, amp_list, plank))
     #trust_region(number_e, gate, T, dt, amp_list, plank)
     #trust_region(number_e, C, T, dt, amp_list, plank)
-    #test_fong(number_e, C, T, dt, amp_list, plank)
-    # test_fong_theta_opt(number_e, C, T, dt, amp_list, plank)
-    test_divincenzo(number_e, C, T, dt, amp_list, plank)
+    test_fong(number_e, C, T, dt, amp_list, plank)
+    #test_fong_theta_opt(number_e, C, T, dt, amp_list, plank)
+    #test_divincenzo(number_e, C, T, dt, amp_list, plank)
 # arr = [None] * 2
 # generateAllBinaryStrings(2, arr, 0)
 # print(accum_list)
