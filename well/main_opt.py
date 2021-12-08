@@ -1748,6 +1748,109 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
     # print("---------------")
 
     # tr = trust_region_problem(np.random.randint(2, size=Nc*Nt*Np).tolist(),.75,Nc*Nt*Np,fid_grad_routine_tr)
+    # samples=20
+    # sol_list=[]
+    # best_sol_obj=None
+    # best_sol_v=None
+    # # pool = mp.Pool(mp.cpu_count())
+
+    # # pool_list= [pool.apply_async(tr_helper, args=(i,))
+    # #           for i in range(0,samples)]
+    # ig = []
+    # for k in range(0,Nt*Np*Nc):
+    #     ig.append(0.0)
+    # v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+
+    # #amp_list = [p1,p2,.5,-.5,1,p1,p2,-p1,1-p2,.25,-.25]
+    # #v_list[i][k,random.randint(0, len(amp_list)-1)] = random.randint(0, 1) 
+    
+    # #[p1,p2,.5,-.5,1,-p1,1-p2,.25,-.25]
+    # #[p1,p2,.5,3.0/2.0,1,-p1,1-p2]
+ 
+    
+    # # [p1,p2,.5,3.0/2.0,1,-p1,1-p2]
+    # shift=0
+
+
+    # # v_list[0][1,4]=1.0
+
+    # # v_list[1][0,4]=1.0
+    # # v_list[1][2,4]=1.0
+
+    # # v_list[1][0+shift,4]=1.0
+    # # v_list[3][0+shift,2]=1.0
+
+    # # v_list[0][17,4]=1.0
+    # # v_list[1][16,4]=1.0
+    # # v_list[1][18,4]=1.0
+    # #-----
+    # # v_list[0][1,4]=1.0
+
+    # # v_list[1][0,4]=1.0
+    # # v_list[1][2,4]=1.0
+    # v_list[1][4+shift,4]=1.0
+    # v_list[1][6+shift,3]=1.0
+    # v_list[1][8+shift,4]=1.0
+
+    # v_list[2][1+shift,2]=1.0
+    # v_list[2][3+shift,3]=1.0
+    # v_list[2][5+shift,3]=1.0
+    # v_list[2][7+shift,3]=1.0
+    # v_list[2][9+shift,3]=1.0
+    # v_list[2][11+shift,2]=1.0
+
+    # v_list[3][0+shift,0]=1.0
+    # v_list[3][2+shift,4]=1.0
+    # v_list[3][4+shift,3]=1.0
+    # v_list[3][6+shift,2]=1.0
+    # v_list[3][8+shift,3]=1.0
+    # v_list[3][10+shift,4]=1.0
+    # v_list[3][12+shift,5]=1.0
+    
+    # v_list[4][1+shift,1]=1.0
+    # v_list[4][3+shift,3]=1.0
+    # v_list[4][5+shift,4]=1.0
+    # v_list[4][7+shift,4]=1.0
+    # v_list[4][9+shift,3]=1.0
+    # v_list[4][11+shift,6]=1.0
+
+    # # v_list[0][17,4]=1.0
+    # # v_list[1][16,4]=1.0
+    # # v_list[1][18,4]=1.0
+
+
+    # #----
+    # # v_list[0][1,4]=1.0
+
+    # # v_list[1][0,4]=1.0
+    # # v_list[1][2,4]=1.0
+
+    
+    # # v_list[1][0+shift,2]=1.0
+    
+    
+    # # v_list[0][17,4]=1.0
+    # # v_list[1][16,4]=1.0
+    # # v_list[1][18,4]=1.0
+
+
+
+
+    # out = v_list[0].flatten()
+    # for i in range(1,len(v_list)):
+    #     out =np.concatenate((out, v_list[i].flatten()), axis=None)
+    # ig = out.tolist()
+    # v_mat=creat_matrix_from_vector(ig,Nc,Nt,Np)
+    # #cur_out.append((v_mat,cur_sol_obj))
+    # make_movie(v_mat,Nc,Nt,Np,1,str(i)+"Ne" + str(number_e))
+    # print(Nc,Nt,Np)
+    # (obj,grad) = fid_grad_routine_tr(ig,False)
+    # print("fong obj theta" + str(obj))
+    # #print(ig)
+  
+    # print(basis_list)
+    # print(accum_list)
+
     samples=20
     sol_list=[]
     best_sol_obj=None
@@ -1756,100 +1859,58 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
 
     # pool_list= [pool.apply_async(tr_helper, args=(i,))
     #           for i in range(0,samples)]
-    ig = []
-    for k in range(0,Nt*Np*Nc):
-        ig.append(0.0)
-    v_list =creat_matrix_from_vector(ig,Nc,Nt,Np)
+    print("hi")
+    # print(pool_list)
+    # sol_list= [p.get() for p in pool_list]
+    for i in range(0,samples):
+        res = tr_helper(i)
+        sol_list.append(res)
 
-    #amp_list = [p1,p2,.5,-.5,1,p1,p2,-p1,1-p2,.25,-.25]
-    #v_list[i][k,random.randint(0, len(amp_list)-1)] = random.randint(0, 1) 
+    #sol_list = pool.map(tr_helper, [i for i in range(0,samples)])
+    #pool.close()
+    # sol_list= []
+    # while len(pool_results) > 0:
+    #     to_remove = [] #avoid removing objects during for_loop
+    #     for r in pool_results:
+    #         # check if process is finished
+    #         if r.ready(): 
+    #             # print result (or do any operation with result)
+    #             sol_list.append(r.get())
+    #             #print(r.get())
+    #             to_remove.append(r)
+    #     for remove in to_remove:
+    #         pool_results.remove(remove)
+    #     time.sleep(1) # ensures that this thread doesn't consume too much memory
+    #pool.join() # make sure all processes are completed
     
-    #[p1,p2,.5,-.5,1,-p1,1-p2,.25,-.25]
-    #[p1,p2,.5,3.0/2.0,1,-p1,1-p2]
- 
+    #sol_list.append((obj_cur,v_cur))
+    for k in range(0,len(sol_list)):
+        print(sol_list[k][0])
+    sol_list.sort(key=lambda x:x[0])
+    best_sol_obj = sol_list[0][0]
+    best_sol_v = sol_list[0][1]
+    #pool.close()
+    print("best objective" + str(best_sol_obj))
+        
+    keep_sol = 10
+    dic={}
+    output=[]
     
-    # [p1,p2,.5,3.0/2.0,1,-p1,1-p2]
-    shift=0
-
-
-    # v_list[0][1,4]=1.0
-
-    # v_list[1][0,4]=1.0
-    # v_list[1][2,4]=1.0
-
-    # v_list[1][0+shift,4]=1.0
-    # v_list[3][0+shift,2]=1.0
-
-    # v_list[0][17,4]=1.0
-    # v_list[1][16,4]=1.0
-    # v_list[1][18,4]=1.0
-    #-----
-    # v_list[0][1,4]=1.0
-
-    # v_list[1][0,4]=1.0
-    # v_list[1][2,4]=1.0
-    v_list[1][4+shift,4]=1.0
-    v_list[1][6+shift,3]=1.0
-    v_list[1][8+shift,4]=1.0
-
-    v_list[2][1+shift,2]=1.0
-    v_list[2][3+shift,3]=1.0
-    v_list[2][5+shift,3]=1.0
-    v_list[2][7+shift,3]=1.0
-    v_list[2][9+shift,3]=1.0
-    v_list[2][11+shift,2]=1.0
-
-    v_list[3][0+shift,0]=1.0
-    v_list[3][2+shift,4]=1.0
-    v_list[3][4+shift,3]=1.0
-    v_list[3][6+shift,2]=1.0
-    v_list[3][8+shift,3]=1.0
-    v_list[3][10+shift,4]=1.0
-    v_list[3][12+shift,5]=1.0
+    #print((obj_cur,v_cur,grad_norm))
+    # v_mat=creat_matrix_from_vector(best_sol_v,Nc,Nt,Np)
+    # make_movie(v_mat,Nc,Nt,Np,1,)
     
-    v_list[4][1+shift,1]=1.0
-    v_list[4][3+shift,3]=1.0
-    v_list[4][5+shift,4]=1.0
-    v_list[4][7+shift,4]=1.0
-    v_list[4][9+shift,3]=1.0
-    v_list[4][11+shift,6]=1.0
-
-    # v_list[0][17,4]=1.0
-    # v_list[1][16,4]=1.0
-    # v_list[1][18,4]=1.0
-
-
-    #----
-    # v_list[0][1,4]=1.0
-
-    # v_list[1][0,4]=1.0
-    # v_list[1][2,4]=1.0
-
-    
-    # v_list[1][0+shift,2]=1.0
-    
-    
-    # v_list[0][17,4]=1.0
-    # v_list[1][16,4]=1.0
-    # v_list[1][18,4]=1.0
-
-
-
-
-    out = v_list[0].flatten()
-    for i in range(1,len(v_list)):
-        out =np.concatenate((out, v_list[i].flatten()), axis=None)
-    ig = out.tolist()
-    v_mat=creat_matrix_from_vector(ig,Nc,Nt,Np)
-    #cur_out.append((v_mat,cur_sol_obj))
-    make_movie(v_mat,Nc,Nt,Np,1,str(i)+"Ne" + str(number_e))
-    print(Nc,Nt,Np)
-    (obj,grad) = fid_grad_routine_tr(ig,False)
-    print("fong obj theta" + str(obj))
-    #print(ig)
-  
-    # print(basis_list)
-    # print(accum_list)
+    for i in range(0,keep_sol):
+        cur_out = []
+        cur_sol = sol_list[i][1]
+        cur_sol_obj = sol_list[i][0]
+        v_mat=creat_matrix_from_vector(cur_sol,Nc,Nt,Np)
+        cur_out.append((v_mat,cur_sol_obj))
+        make_movie(v_mat,Nc,Nt,Np,1,str(i)+"Ne" + str(number_e))
+        os.rename("__temp__.mp4", str(i)+"Ne" + str(number_e) +".mp4")
+        output.append(cur_out)
+    dic["output"] = output
+    pickle.dump( dic, open( str(number_e)+".pkl", "wb" ) )
 
 def test_divincenzo(number_e, gate, T, dt, amp_list, plank):
     #f trust_region(number_e, gate, T, dt, amp_list, plank):
