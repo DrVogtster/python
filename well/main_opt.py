@@ -378,8 +378,8 @@ def fid_leak_obj_theta(U, V, basis_list,theta):
     
     U_hat = U_hat@(np.kron(Z_theta(theta),np.eye(2)))
     # U_hat[2:4,2:4]= -U_hat[2:4,2:4]
-    print("UHAT")
-    print(np.array_str(U_hat, precision=2, suppress_small=True))
+    # print("UHAT")
+    # print(np.array_str(U_hat, precision=2, suppress_small=True))
     
     M = (V.conj().T) @ U_hat
     
@@ -424,8 +424,8 @@ def fid_leak_obj(U, V, basis_list):
     
     # U_hat[2:4,2:4]= -U_hat[2:4,2:4]
     U_hat = U_hat@(np.kron(Z_theta(math.pi),np.eye(2)))
-    print("UHAT")
-    print(np.array_str(U_hat, precision=2, suppress_small=True))
+    # print("UHAT")
+    # print(np.array_str(U_hat, precision=2, suppress_small=True))
     
     M = (V.conj().T) @ U_hat
     
@@ -1851,7 +1851,8 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
     # print(basis_list)
     # print(accum_list)
 
-    samples=20
+    samples=1000
+    keep_sol = 10
     sol_list=[]
     best_sol_obj=None
     best_sol_v=None
@@ -1862,8 +1863,8 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
     print("hi")
     # print(pool_list)
     # sol_list= [p.get() for p in pool_list]
-    for i in range(0,samples):
-        res = tr_helper(i)
+    for val in range(0,samples):
+        res = tr_helper(val)
         sol_list.append(res)
 
     #sol_list = pool.map(tr_helper, [i for i in range(0,samples)])
@@ -1892,7 +1893,7 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
     #pool.close()
     print("best objective" + str(best_sol_obj))
         
-    keep_sol = 10
+    
     dic={}
     output=[]
     
@@ -2148,8 +2149,37 @@ def tr_helper(inner):
             else:
                 for i in range(0,Nc,2):
                     v_list[i][k,random.randint(0, len(amp_list)-1)] = random.randint(0, 1) 
+       
+        # shift=0
+        # v_list[1][4+shift,4]=1.0
+        # v_list[1][6+shift,3]=1.0
+        # v_list[1][8+shift,4]=1.0
 
+        # v_list[2][1+shift,2]=1.0
+        # v_list[2][3+shift,3]=1.0
+        # v_list[2][5+shift,3]=1.0
+        # v_list[2][7+shift,3]=1.0
+        # v_list[2][9+shift,3]=1.0
+        # v_list[2][11+shift,2]=1.0
+
+        # v_list[3][0+shift,0]=1.0
+        # v_list[3][2+shift,4]=1.0
+        # v_list[3][4+shift,3]=1.0
+        # v_list[3][6+shift,2]=1.0
+        # v_list[3][8+shift,3]=1.0
+        # v_list[3][10+shift,4]=1.0
+        # v_list[3][12+shift,5]=1.0
+        
+        # v_list[4][1+shift,1]=1.0
+        # v_list[4][3+shift,3]=1.0
+        # v_list[4][5+shift,4]=1.0
+        # v_list[4][7+shift,4]=1.0
+        # v_list[4][9+shift,3]=1.0
+        # v_list[4][11+shift,5]=1.0
         out = v_list[0].flatten()
+        # make_movie(v_list,Nc,Nt,Np,1,"Ne")
+        # os.rename("__temp__.mp4", "check.mp4")
+        
         for i in range(1,len(v_list)):
             out =np.concatenate((out, v_list[i].flatten()), axis=None)
         ig = out.tolist()
@@ -2172,7 +2202,7 @@ def tr_helper(inner):
     tr = trust_region_problem(ig,.75,Nc*Nt*Np,fid_grad_routine_tr)
 
     (obj_cur,v_cur,grad_norm)=tr.execute_tr(mydic,diconedtothreed,dicthreedtooned)
-    print("worker " + str(i))
+    print("worker " + str(inner))
     return (obj_cur,v_cur)
 
 
@@ -2223,10 +2253,11 @@ def fid_grad_routine_tr(v,make_grad=True):
 
 
 
-
+    # print(grad_list)
+    # quit()
     return 1-obj.real,grad_list
 
-T = 190
+T = 130
 dt = 10
 p1 = math.acos(-1.0/math.sqrt(3))/math.pi
 p2 = math.asin(1.0/3)/math.pi
@@ -2249,11 +2280,9 @@ for i in range(0,len(amp_list)):
     #     amp_list[i] = amp_list[i] + 2.0*math.pi
     #amp_list2[i] = amp_list2[i]*math.pi
 
+#t[5] = amp_list[5] +2*math.pi
 # print(amp_list)
 # quit()
-# amp_list[5] = amp_list[5] +2*math.pi
-# print(amp_list)
-
 number_e = 6
 gate_list = generate_gate_lists_one()
 plank = 1.0

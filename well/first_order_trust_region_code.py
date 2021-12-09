@@ -4,6 +4,7 @@ import numpy as np
 import math
 import os 
 import sys
+from main_opt import *
 
 class knapsack:
     def __init__(self,cur_v,mygrad,Nc,Nt,Np,amp_list,neighborlist,diconedtothreed,dicthreedtooned,tr_radius,mydic):
@@ -27,6 +28,11 @@ class knapsack:
         Nt = self.Nt
         Nc = self.Nc
         Np = self.Np
+
+        # my_mat = creat_matrix_from_vector(my_obj,Nc,Nt,Np)
+        # print(my_mat[4][11,:])
+        # quit()
+
         neighbor_list = self.neighbor_list
         if(len(neighbor_list)==2):
             temp =[]
@@ -154,6 +160,7 @@ class trust_region_problem:
         self.obj_grad_func = obj_grad_func
 
     def execute_tr(self,mydic,diconedtothreed,dicthreedtooned):
+        print("trust hit")
         try:
             dim = mydic["dim"]
             Nc = mydic["Nc"]
@@ -174,8 +181,10 @@ class trust_region_problem:
             counter=0
             print(len(v_cur))
             obj_cur,grad_cur = obj_grad_func(v_cur)
+            print("trust hit2")
         
             while(tr_radius>=1):
+                print(tr_radius)
                 if(np.linalg.norm(grad_cur,2)<1e-3):
                     return (obj_cur,v_cur,np.linalg.norm(grad_cur,2))
                 knap_problem = knapsack(v_cur,grad_cur,Nc,Nt,Np,amp_list,nl,diconedtothreed,dicthreedtooned,tr_radius,mydic)
@@ -193,6 +202,7 @@ class trust_region_problem:
                 print("Current Objective: " +str(obj_cur))
                 print("New Objective: " +str(obj_new))
                 print("Current Radius" +str(tr_radius))
+                print("Norm of current grad:"  + str(np.linalg.norm(grad_cur,2)))
 
                 print("-----------------")
                 for k in range(0,len(v_cur)):
@@ -223,6 +233,7 @@ class trust_region_problem:
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print("error")
             print(exc_type, fname, exc_tb.tb_lineno)
 
 
