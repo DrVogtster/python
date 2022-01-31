@@ -8,6 +8,6 @@ packages:
 
 using Pkg
 
-dependencies = ["Juniper","Ipopt","JuMP", "Cbc","Alpine","Trapz","DifferentialEquations"]
+dependencies = ["Juniper","Ipopt","JuMP", "Cbc","Alpine","Trapz","DifferentialEquations","DiffEqFlux","Flux","OrdinaryDiffEq","DiffEqSensitivity","ForwardDiff","Calculus","Tracker","ReverseDiff","RecursiveArrayTools","DiffEqBase","Zygote"]
 
 Pkg.add(dependencies)
