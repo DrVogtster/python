@@ -1702,8 +1702,10 @@ def test_fong(number_e, gate, T, dt, amp_list, plank):
     x = fong_gen_single()
     
     arr = [None] * number_e
+   
     generateAllBinaryStrings(int(number_e/3), arr, 0)
-    
+    print(accum_list)
+    quit()
     gamma = 1
     sigma = 0
     e0, e1 = dfs_0_1(gamma, sigma, x)
