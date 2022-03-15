@@ -1,0 +1,70 @@
+## syntax=docker/dockerfile:1
+
+
+FROM ubuntu:latest
+
+
+WORKDIR /app
+
+
+
+
+# FROM julia:1.0.3
+CMD /bin/bash
+
+# #USER root
+# RUN apt-get -y update
+# #RUN apt-get -y install git
+
+# RUN apt-get install -y curl
+# 
+# RUN apt install -y build-essential
+# #RUN apt install -y g++ pkg-config libgl1-mesa-dev libxcb*-dev libfontconfig1-dev libxkbcommon-x11-dev python libgtk-3-dev
+# #RUN apt apt-get install libxcb-xinerama0
+
+
+# RUN apt-get update && \
+#    apt-get install -y -q --allow-unauthenticated \
+#    git \
+#    sudo
+# RUN useradd -m -s /bin/bash linuxbrew && \
+#    usermod -aG sudo linuxbrew &&  \
+#    mkdir -p /home/linuxbrew/.linuxbrew && \
+#    chown -R linuxbrew: /home/linuxbrew/.linuxbrew
+# USER linuxbrew
+# ENV JULIA_DEPOT_PATH /home/.julia
+# RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+
+# RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/linuxbrew/.profile
+# RUN echo eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+
+
+
+# RUN /home/linuxbrew/.linuxbrew/bin/brew update
+# RUN /home/linuxbrew/.linuxbrew/bin/brew install gcc
+# RUN /home/linuxbrew/.linuxbrew/bin/brew install pkg-config
+
+
+
+# RUN /home/linuxbrew/.linuxbrew/bin/brew install ipopt
+# RUN /home/linuxbrew/.linuxbrew/bin/brew install glpk
+
+# RUN /home/linuxbrew/.linuxbrew/bin/brew install julia
+
+
+
+# install julia dependencies
+FROM julia:latest
+COPY . . 
+RUN julia packages.jl
+
+
+# run the application
+#CMD ["julia"]
+
+
+
+
+

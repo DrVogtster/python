@@ -1,3 +1,5 @@
+ENV["GKSwstype"]="nul"
+
 using Plots
 using Random
 

@@ -1,3 +1,4 @@
+ENV["GKSwstype"]="nul"
 using Distributions
 using LinearAlgebra
 using KernelDensity
